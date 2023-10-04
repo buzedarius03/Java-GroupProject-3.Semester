@@ -1,0 +1,8 @@
+stats:
+    stage: build
+    script: createstats
+    artifacts:
+      paths:
+        - gitstats.html
+    tags:
+     - oop2
