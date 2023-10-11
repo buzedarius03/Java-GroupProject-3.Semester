@@ -339,8 +339,8 @@ git config --local user.name "Max Muster"
 git config --local user.email "max.muster@student.tugraz.at"
 
 # Add framework as second remote repository.
-git remote add git@student.cgv.tugraz.at:OOP2.2023/framework.git framework
-git pull framework
+git remote add framework git@student.cgv.tugraz.at:OOP2.2023/framework.git
+git pull framework main
 
 # Only one member of your group has to merge/push the framework to your own repository (A1+A2).
 git merge framework/main
