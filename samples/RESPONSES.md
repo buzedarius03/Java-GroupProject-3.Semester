@@ -241,7 +241,7 @@
 
 `GET http://localhost:8010/route?from=20929584&to=6137492613&weighting=time`
 
-```jsonc
+```json
 {
 	"length": 2480.1975,
 	"time": 4.262986,

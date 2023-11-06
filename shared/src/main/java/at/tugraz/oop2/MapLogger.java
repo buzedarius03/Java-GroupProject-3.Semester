@@ -70,7 +70,7 @@ public class MapLogger {
      */
 
     public static void backendLogRoadRequest(int id) {
-        logger.info("Backend got request for single amenity, id: " + id);
+        logger.info("Backend got request for single road, id: " + id);
     }
 
     /**

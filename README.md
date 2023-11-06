@@ -226,9 +226,9 @@ You should return a simple error response in the Spring Boot service as JSON as 
 
 The next task is to load the provided OSM-file, which you can download directly from the [TeachCenter](https://tc.tugraz.at/main/mod/resource/view.php?id=378614). First, you need to load all the nodes (type `node`) (please note that the Longitude is the X-Coordinate and the Latitude the Y-Coordinate), while saving the tags in some (hash-)map, with the key being `k` and the value being `v`.
 
-Next, you should load the ways (type `way`), which consists of multiple nodes. These have references for nodes, which have to be resolved and have to be converted to Line Strings. If these are closed and have more than two points, these have to converted to polygons. The tags have to be handled the same way as in the nodes.
+Next, you should load the ways (type `way`), which consists of multiple nodes. These have references for nodes, which have to be resolved and have to be converted to Line Strings. If these are closed and have more than two points, these have to converted to polygons. The tags have to be handled the same way as in the nodes. If you do not find a node that is referenced by the way you can just ignore it.
 
-The last type to load are the relations (type `relation`), where these are to be handled in a very specific way. This [article has some great illustrations](https://wiki.openstreetmap.org/wiki/Relation:multipolygon) of edge cases. However, to make it easier for you we provide you with pseudocode:
+The last type to load are the relations (type `relation`), where these are to be handled in a very specific way. This [article has some great illustrations](https://wiki.openstreetmap.org/wiki/Relation:multipolygon) of edge cases. However, to make it easier for you we provide you with pseudocode (note: the members of the relation can be fetched in a similar fashion to the ways, and you can ignore ways if they are not present):
 
 ```python
 def buildGeom(members:list, tags: dict{str,str}) -> GeometryCollection:
@@ -330,7 +330,7 @@ Open a shell on your machine and issue the following commands:
 ```bash
 # Clone your team repository, NOT the framework.
 # XXX is your Assignment Team number
-git clone git@student.cgv.tugraz.at:oop2_2023/XXX.git 
+git clone git@student.cgv.tugraz.at:OOP2.2023/XXX.git 
 cd XXX
 
 # Set your Git credentials. Use "--global" instead of "--local" if you
@@ -399,6 +399,11 @@ First, make sure that you have both `docker` and `docker-compose` installed (if 
 ./docker/build_docker.sh && docker-compose up -d
 ```
 This should start and run your code in a docker container, including the frontend. You can also omit the `-d` flag to stay attached to all containers and stop them with `CTRL+C`.
+
+After starting the container you should be able to access the frontend using  [localhost:8042](localhost:8042). Please not that to make the request work within a browser you have to add CORS-headers to the controller methods using the following annotation:
+```
+@CrossOrigin(origins = "*")
+```
 
 If you want to stop the containers use:
 
