@@ -10,7 +10,8 @@ public class MapLogger {
     private static final Logger logger = Logger.getLogger(MapLogger.class.getName());
 
     /**
-     * Log in the Middleware after parsing the environment variables and pass the ones you will use!
+     * Log in the Middleware after parsing the environment variables and pass the
+     * ones you will use!
      *
      * @param port
      * @param backend_target
@@ -20,7 +21,8 @@ public class MapLogger {
     }
 
     /**
-     * Log in the Backend after parsing the environment variables and pass the ones you will use!
+     * Log in the Backend after parsing the environment variables and pass the ones
+     * you will use!
      *
      * @param port
      * @param osm_file
@@ -31,7 +33,8 @@ public class MapLogger {
     }
 
     /**
-     * Log in the Backend after finishing loading all the nodes (this should not take longer than 5 seconds!) and log
+     * Log in the Backend after finishing loading all the nodes (this should not
+     * take longer than 5 seconds!) and log
      * the amount of types *not* referenced by other entities!
      *
      * @param nodes
@@ -39,7 +42,7 @@ public class MapLogger {
      * @param relations
      */
     public static void backendLoadFinished(long nodes, long ways, long relations) {
-        logger.info("Finished Loading: " + nodes + " nodes, " + ways + " ways, " + relations + " relations!");   
+        logger.info("Finished Loading: " + nodes + " nodes, " + ways + " ways, " + relations + " relations!");
     }
 
     /**
@@ -51,6 +54,7 @@ public class MapLogger {
 
     /**
      * Log in the Backend after receiving a request for a single amenity
+     * 
      * @param id the id requested
      */
 
@@ -64,8 +68,10 @@ public class MapLogger {
     public static void backendLogRoadsRequest() {
         logger.info("Backend got request for roads!");
     }
+
     /**
      * Log in the Backend after receiving a request for a single road
+     * 
      * @param id the id requested
      */
 
@@ -75,17 +81,20 @@ public class MapLogger {
 
     /**
      * Log on the backend after receiving a request for a Map Tile
-     * @param x x-tile ID
-     * @param y y-tile ID
-     * @param z z-tile ID
+     * 
+     * @param x      x-tile ID
+     * @param y      y-tile ID
+     * @param z      z-tile ID
      * @param layers the layers you are requested to draw (in the correct order!)
      */
     public static void backendLogMapRequest(int x, int y, int z, List<String> layers) {
-        logger.info("Backend got request for map " + x + "/" + y + "/" + z + " with layers: " + String.join(",", layers));
+        logger.info(
+                "Backend got request for map " + x + "/" + y + "/" + z + " with layers: " + String.join(",", layers));
     }
 
     /**
      * Log on the Backend after determining all applicable OSM entities
+     * 
      * @param ids the ID's of all entities you are about to draw
      */
     public static void backendLogMapEntities(List<Long> ids) {

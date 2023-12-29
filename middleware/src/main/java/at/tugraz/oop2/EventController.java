@@ -12,12 +12,11 @@ public class EventController {
     @GetMapping("/amenities")
     public Map<String, Object> getAmenity() {
         return Map.of(
-                    "entries", new Amenity[]{new Amenity()},
-                    "paging", Map.of(
-                            "skip", 0,
-                            "take", 2,
-                            "total", 3)
-                );
+                "entries", new Amenity[] { new Amenity() },
+                "paging", Map.of(
+                        "skip", 0,
+                        "take", 2,
+                        "total", 3));
     }
 
     @GetMapping("/amenities/{id}")
@@ -28,12 +27,11 @@ public class EventController {
     @GetMapping("/roads")
     public Map<String, Object> getRoads() {
         return Map.of(
-                "entries", new Road[]{new Road()},
+                "entries", new Road[] { new Road() },
                 "paging", Map.of(
                         "skip", 0,
                         "take", 2,
-                        "total", 3)
-        );
+                        "total", 3));
     }
 
     @GetMapping("/roads/{id}")

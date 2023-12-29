@@ -19,8 +19,7 @@ public class Road {
             entry("name", "Sandgasse"),
             entry("width", "6.5"),
             entry("parking:lane:right", "parallel"),
-            entry("highway", "residential")
-    );
+            entry("highway", "residential"));
     String type = "residential";
     long[] child_ids = {
             21099615,
@@ -28,9 +27,10 @@ public class Road {
             361348254
     };
 
-    public Road(){}
+    public Road() {
+    }
 
-    public Road(long a_id){
+    public Road(long a_id) {
         id = a_id;
     }
 }
