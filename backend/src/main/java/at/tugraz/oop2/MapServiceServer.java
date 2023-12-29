@@ -10,7 +10,7 @@ public class MapServiceServer {
         logger.info("Starting backend...");
         String backend_port = System.getenv().getOrDefault("JMAP_BACKEND_PORT", "8020");
         String jmap_backend_osmfile = System.getenv().getOrDefault("JMAP_BACKEND_OSMFILE",
-                "data/graz_tiny_reduced.osm");
+                "data/styria_reduced.osm");
         int Jmap_backend_port;
         try {
             Jmap_backend_port = Integer.parseInt(backend_port);
@@ -23,6 +23,7 @@ public class MapServiceServer {
         MapLogger.backendStartup(Jmap_backend_port, jmap_backend_osmfile);
 
         OSMParser parser = new OSMParser(jmap_backend_osmfile);
+        parser.parse();
 
     }
 }
