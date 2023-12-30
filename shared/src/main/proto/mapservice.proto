@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package at.tugraz.oop2;
+
+message Point {
+    double latitude = 1;
+    double longitude = 2;
+}
+
+message MapRequest {
+    string address = 1;
+}
+
+message MapResponse {
+    Point location = 1;
+    string map_image_url = 2;
+}
+
+service MapService {
+    rpc GetMap(MapRequest) returns (MapResponse);
+}

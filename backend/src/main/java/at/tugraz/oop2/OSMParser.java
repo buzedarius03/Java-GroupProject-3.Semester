@@ -17,7 +17,7 @@ public class OSMParser {
         osmfile = a_osmfile;
     }
 
-    public void parse() {
+    public OSMData parse() {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -49,7 +49,7 @@ public class OSMParser {
     
                 nodesMap.put(id, nodeElement);
             }
-            logger.info("Parsed " + numNodes + " nodes.");
+            logger.info("Parsing of nodes complete. Parsed " + numNodes + " nodes.");
     
             // Parse ways
             NodeList wayList = document.getElementsByTagName("way");
@@ -80,7 +80,7 @@ public class OSMParser {
     
                 waysMap.put(id, way);
             }
-            logger.info("Parsed " + numWays + " ways.");
+            logger.info("Parsing of ways complete. Parsed " + numWays + " ways.");
     
             // Parse relations
             NodeList relationList = document.getElementsByTagName("relation");
@@ -113,28 +113,26 @@ public class OSMParser {
     
                 relationsMap.put(id, relation);
             }
-            logger.info("Parsed " + numRelations + " relations.");
+            logger.info("Parsing of relations complete. Parsed " + numRelations + " relations.");
             
             // TODO: Implement handling of closed ways and relations...
 
-            // tell the logger that we are "done"
-            MapLogger.backendLoadFinished(numNodes, numWays, numRelations);
+            // tell the logger that we are "done" with loading
+            //MapLogger.backendLoadFinished(numNodes, numWays, numRelations);
 
-            // print a random node for testing
+            // print a random example of each type for debugging
             Element node = nodesMap.get(21099615L);
-            logger.info("Node: " + node.getAttribute("id") + " " + node.getAttribute("lat") + " " + node.getAttribute("lon"));
-
-            // print a random way for testing
             Way way = waysMap.get(32685265L);
-            logger.info("Way: " + way.getId() + " " + way.getNodes().size() + " " + way.getTags().get("name"));
-
-            // print the first relation for testing
             Relation relation = relationsMap.get(15743373L);
+            logger.info("Node: " + node.getAttribute("id") + " " + node.getAttribute("lat") + " " + node.getAttribute("lon"));
+            logger.info("Way: " + way.getId() + " " + way.getNodes().size() + " " + way.getTags().get("name"));
             logger.info("Relation: " + relation.getId() + " " + relation.getMembers().size() + " " + relation.getTags().get("name"));
 
+            // create an OSMData object and return it
+            OSMData osmData = new OSMData(nodesMap, waysMap, relationsMap);
+            return osmData;
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.info("Error parsing OSM file: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
