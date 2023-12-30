@@ -62,8 +62,9 @@ public class MapServiceServer {
         }
 
         if (data != null) {
+            
+            // notify the logger that the backend finished parsing
             MapLogger.backendLoadFinished(data.getNodesMap().size(), data.getWaysMap().size(), data.getRelationsMap().size());
-
         }
         
         

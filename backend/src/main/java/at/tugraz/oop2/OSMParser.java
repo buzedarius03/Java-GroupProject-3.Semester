@@ -117,9 +117,6 @@ public class OSMParser {
             
             // TODO: Implement handling of closed ways and relations...
 
-            // tell the logger that we are "done" with loading
-            //MapLogger.backendLoadFinished(numNodes, numWays, numRelations);
-
             // print a random example of each type for debugging
             Element node = nodesMap.get(21099615L);
             Way way = waysMap.get(32685265L);
