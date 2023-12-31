@@ -11,12 +11,17 @@ import java.util.Map;
 public class EventController {
     @GetMapping("/amenities")
     public Map<String, Object> getAmenity() {
-        return Map.of(
-                "entries", new Amenity[] { new Amenity() },
-                "paging", Map.of(
-                        "skip", 0,
-                        "take", 2,
-                        "total", 3));
+        try{
+            return Map.of(
+                    "entries", new Amenity[] { new Amenity() },
+                    "paging", Map.of(
+                            "skip", 0,
+                            "take", 2,
+                            "total", 3));
+        }catch(Error ex)
+        {
+
+        }
     }
 
     @GetMapping("/amenities/{id}")
