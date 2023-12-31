@@ -20,7 +20,7 @@ public class EventController {
                             "total", 3));
         }catch(Error ex)
         {
-
+            throw new Error(" ");
         }
     }
 
@@ -31,16 +31,26 @@ public class EventController {
 
     @GetMapping("/roads")
     public Map<String, Object> getRoads() {
-        return Map.of(
-                "entries", new Road[] { new Road() },
-                "paging", Map.of(
-                        "skip", 0,
-                        "take", 2,
-                        "total", 3));
+        try {
+            return Map.of(
+                    "entries", new Road[]{new Road()},
+                    "paging", Map.of(
+                            "skip", 0,
+                            "take", 2,
+                            "total", 3));
+        }catch(Error ex)
+        {
+            throw new Error(" ");
+        }
     }
 
     @GetMapping("/roads/{id}")
     public Road getRoads_byID(@PathVariable("id") long id) {
-        return new Road(id);
+        try{
+            return new Road(id);
+        }catch(Error ex)
+        {
+            throw new Error(" ");
+        }
     }
 }
