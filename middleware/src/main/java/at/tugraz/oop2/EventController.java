@@ -18,15 +18,36 @@ public class EventController {
                             "skip", 0,
                             "take", 2,
                             "total", 3));
-        }catch(Error ex)
+        }catch(InternalError ex)
         {
-            throw new Error(" ");
+            throw new InternalError("Internal Issues");
+        }
+        catch(InvalidParameterError ex)
+        {
+            throw new InvalidParameterError("Invalid Parameters");
+        }
+        catch(ResourceNotFoundError ex)
+        {
+            throw new ResourceNotFoundError("Some Resources are not found");
         }
     }
 
     @GetMapping("/amenities/{id}")
     public Amenity getAmenities_byID(@PathVariable("id") long id) {
-        return new Amenity(id);
+        try {
+            return new Amenity(id);
+        }catch(InternalError ex)
+        {
+            throw new InternalError("Internal Issues");
+        }
+        catch(InvalidParameterError ex)
+        {
+            throw new InvalidParameterError("Invalid Parameters");
+        }
+        catch(ResourceNotFoundError ex)
+        {
+            throw new ResourceNotFoundError("Some Resources are not found");
+        }
     }
 
     @GetMapping("/roads")
@@ -38,9 +59,17 @@ public class EventController {
                             "skip", 0,
                             "take", 2,
                             "total", 3));
-        }catch(Error ex)
+        }catch(InternalError ex)
         {
-            throw new Error(" ");
+            throw new InternalError("Internal Issues");
+        }
+        catch(InvalidParameterError ex)
+        {
+            throw new InvalidParameterError("Invalid Parameters");
+        }
+        catch(ResourceNotFoundError ex)
+        {
+            throw new ResourceNotFoundError("Some Resources are not found");
         }
     }
 
@@ -48,9 +77,17 @@ public class EventController {
     public Road getRoads_byID(@PathVariable("id") long id) {
         try{
             return new Road(id);
-        }catch(Error ex)
+        }catch(InternalError ex)
         {
-            throw new Error(" ");
+            throw new InternalError("Internal Issues");
+        }
+        catch(InvalidParameterError ex)
+        {
+            throw new InvalidParameterError("Invalid Parameters");
+        }
+        catch(ResourceNotFoundError ex)
+        {
+            throw new ResourceNotFoundError("Some Resources are not found");
         }
     }
 }

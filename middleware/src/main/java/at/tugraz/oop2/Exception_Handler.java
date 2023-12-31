@@ -12,27 +12,27 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class Exception_Handler{
 
-    @ExceptionHandler(Error.class)
+    @ExceptionHandler(ResourceNotFoundError.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    protected Error_Response handleResourceNotFoundError(Error ex)
+    protected Error_Response handleResourceNotFoundError(ResourceNotFoundError ex)
     {
-        return new Error_Response(HttpStatus.NOT_FOUND.value(), "ResourceNotFound");
+        return new Error_Response(ex.getMessage());
     }
 
-    @ExceptionHandler(Error.class)
+    @ExceptionHandler(InvalidParameterError.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    protected Error_Response handleInvalidParameterError(Error ex)
+    protected Error_Response handleInvalidParameterError(InvalidParameterError ex)
     {
-        return new Error_Response(HttpStatus.BAD_REQUEST.value(), "Invalid Parameter");
+        return new Error_Response(ex.getMessage());
     }
 
-    @ExceptionHandler(Error.class)
+    @ExceptionHandler(InternalError.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    protected Error_Response handleBackendUnableError(Error ex)
+    protected Error_Response handleInternalError(InternalError ex)
     {
-        return new Error_Response(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal Issues");
+        return new Error_Response(ex.getMessage());
     }
 }
