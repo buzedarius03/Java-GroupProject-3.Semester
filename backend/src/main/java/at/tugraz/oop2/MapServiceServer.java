@@ -2,26 +2,17 @@ package at.tugraz.oop2;
 
 import java.util.logging.Logger;
 
-import io.grpc.stub.StreamObserver;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-
-import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 
 
 public class MapServiceServer {
     private static final Logger logger = Logger.getLogger(MapServiceServer.class.getName());
 
-    // make the logger print into a single line instead of multiple lines
-    // (TODO this has probably be removed for the final submission because the testsystem does not like it)
-    //static {
-    //    System.setProperty("java.util.logging.SimpleFormatter.format", "%5$s %n");
-    //}
-
     private Server server;
 
     private void start(int port) throws Exception {
-        //server = ServerBuilder.forPort(port).addService(new MapServiceImpl()).build().start();
+        server = ServerBuilder.forPort(port).addService(new MapServiceImpl()).build().start();
         logger.info("gRPC Server started, listening on " + port);
         server.awaitTermination();
 
@@ -68,10 +59,10 @@ public class MapServiceServer {
         }
         
         
-        // start the backend after parsing (TODO check if this is the right place to start the backend, maybe the testsystem wants to have the backend started before parsing?)
+        // start the backend after parsing
         MapServiceServer server = new MapServiceServer();
         try {
-            //server.start(Jmap_backend_port);
+            server.start(Jmap_backend_port);
             logger.info("Backend started.");
         } catch (Exception e) {
             logger.severe("Failed to start backend: " + e.getMessage());
