@@ -7,6 +7,7 @@ import at.tugraz.oop2.Mapservice.RoadbyIdRequest;
 import at.tugraz.oop2.Mapservice.RoadbyIdResponse;
 import org.w3c.dom.Element;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class MapServiceImpl extends MapServiceImplBase {
@@ -23,10 +24,17 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         long roadid = request.getId();
         logger.info("Received request for road with id " + roadid);
+        MapLogger.backendLogRoadRequest((int)roadid);
         
         Way way = osmData.getWaysMap().get(roadid);
         String name = way.getTags().get("name");
         String type = way.getTags().get("highway");
+        logger.info("Road with id " + roadid + " is " + name + " and of type " + type);
+
+        if (name == null) {
+            name = "";
+        }
+        
         double[][] coordinates = new double[way.getNodes().size()][2];
         for (int i = 0; i < way.getNodes().size(); i++) {
             Element node = way.getNodes().get(i);

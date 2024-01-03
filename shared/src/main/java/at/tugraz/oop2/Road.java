@@ -8,25 +8,16 @@ import static java.util.Map.entry;
 
 @Getter
 public class Road {
-    String name = "Sandgasse";
-    long id = 32685265;
+    String name;
+    long id;
     Geometry geom = new Geometry();
-    Map<String, String> tags = Map.ofEntries(
-            entry("sidewalk", "separate"),
-            entry("surface", "asphalt"),
-            entry("lit", "yes"),
-            entry("maxspeed", "30"),
-            entry("name", "Sandgasse"),
-            entry("width", "6.5"),
-            entry("parking:lane:right", "parallel"),
-            entry("highway", "residential"));
-    String type = "residential";
-    long[] child_ids = {
-            21099615,
-            20832686,
-            361348254
-    };
+    String type;
 
+    Map<String, String> tags = Map.ofEntries();
+    
+    long[] child_ids = {};
+
+    
     public Road() {
     }
 

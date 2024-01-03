@@ -17,6 +17,7 @@ public class MapApplicationClient {
     MapServiceGrpc.MapServiceBlockingStub stub = MapServiceGrpc.newBlockingStub(channel);
 
     public Road getRoadbyId(long id) {
+
         RoadbyIdRequest request = RoadbyIdRequest.newBuilder().setId(id).build();
         String name = stub.getRoadbyId(request).getName();
         String type = stub.getRoadbyId(request).getType();
