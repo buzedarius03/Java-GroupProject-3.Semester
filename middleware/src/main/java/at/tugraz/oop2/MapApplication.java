@@ -28,6 +28,5 @@ public class MapApplication {
         app.setDefaultProperties(Collections
                 .singletonMap("server.port", Jmap_middleware_port));
         app.run();
-
     }
 }
