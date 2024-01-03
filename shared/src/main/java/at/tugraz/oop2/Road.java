@@ -29,6 +29,9 @@ public class Road {
      , Map<String, String> a_properties,  Map<String, String> a_tags, String a_type, long[] a_child_ids) {
         name = a_name;
         id = a_id;
+        type = a_type;
+        tags = a_tags;
+        child_ids = a_child_ids;
         geom = new Geometry(a_geom_type, coordinates, a_crs_type, a_properties);
     }
 }
