@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.logging.Logger;
 import java.util.Map;
+import at.tugraz.oop2.MapApplicationClient;
 
 @RestController
 
 public class EventController {
 
     private static final Logger logger = Logger.getLogger(EventController.class.getName());
+    MapApplicationClient client = new MapApplicationClient();
 
     @GetMapping("/amenities")
     public Map<String, Object> getAmenity() {
@@ -80,10 +82,11 @@ public class EventController {
     }
 
     @GetMapping("/roads/{id}")
-    public Road getRoads_byID(@PathVariable("id") long id) {
+    public Road getRoadsByID(@PathVariable("id") long id) {
         try{
-            logger.info("getRoads_byID called with id=" + id);
-            return getRoads_byID(id);
+            logger.info("Querying backend for road with id " + id);
+            Road road = client.getRoadbyId(id);
+            return road;
         }catch(InternalError ex)
         {
             throw new InternalError("Internal Issues");
