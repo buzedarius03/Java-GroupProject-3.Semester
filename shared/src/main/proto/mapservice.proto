@@ -7,7 +7,7 @@ message RoadbyIdRequest {
 }
 
 message RoadbyIdResponse {
-    string map_image_url = 2;
+    Object road;
 }
 
 service MapService {
