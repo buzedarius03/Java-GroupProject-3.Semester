@@ -11,10 +11,12 @@ public class MapApplicationClient {
    ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8020).usePlaintext().build();
     MapServiceGrpc.MapServiceBlockingStub stub = MapServiceGrpc.newBlockingStub(channel);
 
-    public Object getRoadbyId(int id) {
+    public Road getRoadbyId(long id) {
         RoadbyIdRequest request = RoadbyIdRequest.newBuilder().setId(id).build();
-        Object road = stub.getRoadbyId(request).getField(null);
-        return road;
+        String name = stub.getRoadbyId(request).getName();
+        String type = stub.getRoadbyId(request).getType();
+        return new Road();
+        
     }
 
 }

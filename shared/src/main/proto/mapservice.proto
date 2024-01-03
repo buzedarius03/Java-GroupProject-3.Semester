@@ -12,12 +12,12 @@ message KeyValue {
 }
 
 message RoadbyIdResponse {
-    string name = 2;
-    int64 id = 3;
-    string type = 4;
-    repeated double coordinates = 5;
-    repeated KeyValue tags = 6;
-    repeated int64 child_ids = 7;
+    string name = 1;
+    int64 id = 2;
+    string type = 3;
+    repeated double coordinates = 4;
+    repeated KeyValue tags = 5;
+    repeated int64 child_ids = 6;
 }
 
 service MapService {
