@@ -3,11 +3,21 @@ syntax = "proto3";
 package at.tugraz.oop2;
 
 message RoadbyIdRequest {
-    int32 id = 1;
+    int64 id = 1;
+}
+
+message KeyValue {
+    string key = 1;
+    string value = 2;
 }
 
 message RoadbyIdResponse {
-    Object road;
+    string name = 2;
+    int64 id = 3;
+    string type = 4;
+    repeated double coordinates = 5;
+    repeated KeyValue tags = 6;
+    repeated int64 child_ids = 7;
 }
 
 service MapService {

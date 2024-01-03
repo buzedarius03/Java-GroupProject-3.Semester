@@ -12,24 +12,10 @@ public class MapServiceImpl extends MapServiceImplBase {
     public void getRoadbyId(RoadbyIdRequest request, StreamObserver<RoadbyIdResponse> responseObserver) {
 
         // Handle the request -> create response
-        MapServiceServer server = new MapServiceServer();
-        Object road = null;
-        int id = request.getId();
-        Way way = server.getData().getWaysMap().get(id);
-        if(way != null) {
-            road = way; 
-        }
-        Relation relation = server.getData().getRelationsMap().get(id);
-        if(relation != null) {
-            road = relation;
-        }
-        Element node = server.getData().getNodesMap().get(id);
-        if(node != null) {
-            road = node;
-        }
+        
 
         RoadbyIdResponse response = RoadbyIdResponse.newBuilder()
-                .setField(null, road).build();
+                .setField(null, 0).build();
                 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
