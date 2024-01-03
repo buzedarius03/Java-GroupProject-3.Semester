@@ -12,12 +12,13 @@ public class MapApplicationClient {
     MapServiceGrpc.MapServiceBlockingStub stub = MapServiceGrpc.newBlockingStub(channel);
 
     public Road getRoadbyId(long id) {
+
         RoadbyIdRequest request = RoadbyIdRequest.newBuilder().setId(id).build();
         String name = stub.getRoadbyId(request).getName();
         String type = stub.getRoadbyId(request).getType();
         double[][] coordinates = stub.getRoadbyId(request).getCoordinatesList().toArray(new double[0][0]);
-        return new Road();
         
+        return new Road(name, id, "LineString", coordinates, "EPSG:4326", Map.ofEntries(), Map.ofEntries(), type, new long[0]); 
     }
 
 }
