@@ -15,6 +15,7 @@ public class MapApplicationClient {
         RoadbyIdRequest request = RoadbyIdRequest.newBuilder().setId(id).build();
         String name = stub.getRoadbyId(request).getName();
         String type = stub.getRoadbyId(request).getType();
+        double[][] coordinates = stub.getRoadbyId(request).getCoordinatesList().toArray(new double[0][0]);
         return new Road();
         
     }

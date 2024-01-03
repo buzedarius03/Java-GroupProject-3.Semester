@@ -6,6 +6,10 @@ message RoadbyIdRequest {
     int64 id = 1;
 }
 
+message Coordinate {
+    repeated double value = 1;
+}
+
 message KeyValue {
     string key = 1;
     string value = 2;
@@ -15,7 +19,7 @@ message RoadbyIdResponse {
     string name = 1;
     int64 id = 2;
     string type = 3;
-    repeated double coordinates = 4;
+    repeated Coordinate coordinates = 4;
     repeated KeyValue tags = 5;
     repeated int64 child_ids = 6;
 }
