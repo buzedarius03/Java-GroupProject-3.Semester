@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package at.tugraz.oop2;
 
-message RoadByIdRequest {
-    int id = 0;
+message RoadbyIdRequest {
+    int32 id = 1;
 }
 
-message RoadByIdResponse {
-    Road road;
+message RoadbyIdResponse {
+    string map_image_url = 2;
 }
 
 service MapService {
-    rpc GetRoadById(RoadByIdRequest) return (RoadByIdResponse);
+    rpc GetRoadbyId(RoadbyIdRequest) returns (RoadbyIdResponse);
 }

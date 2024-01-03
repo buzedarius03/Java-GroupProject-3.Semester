@@ -10,6 +10,7 @@ public class MapServiceServer {
     private static final Logger logger = Logger.getLogger(MapServiceServer.class.getName());
 
     private Server server;
+    private static OSMData data;
 
     private void start(int port) throws Exception {
         server = ServerBuilder.forPort(port).addService(new MapServiceImpl()).build().start();
@@ -41,7 +42,6 @@ public class MapServiceServer {
         MapLogger.backendStartup(Jmap_backend_port, jmap_backend_osmfile);
 
         // Create OSMData Object and parse the OSM file
-        OSMData data = null;
         OSMParser parser = new OSMParser(jmap_backend_osmfile);
         try {
             data = parser.parse();
@@ -69,5 +69,8 @@ public class MapServiceServer {
             System.exit(1);
         }
         
+    }
+    public OSMData getData() {
+        return data;
     }
 }
