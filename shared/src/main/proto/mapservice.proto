@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package at.tugraz.oop2;
+option java_package = "at.tugraz.oop2";
 
 message RoadbyIdRequest {
     int64 id = 1;

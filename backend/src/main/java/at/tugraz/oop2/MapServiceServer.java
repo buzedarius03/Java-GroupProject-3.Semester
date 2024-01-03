@@ -13,7 +13,7 @@ public class MapServiceServer {
     private static OSMData data;
 
     private void start(int port) throws Exception {
-        server = ServerBuilder.forPort(port).addService(new MapServiceImpl()).build().start();
+        server = ServerBuilder.forPort(port).addService(new MapServiceImpl(data)).build().start();
         logger.info("gRPC Server started, listening on " + port);
         server.awaitTermination();
 
