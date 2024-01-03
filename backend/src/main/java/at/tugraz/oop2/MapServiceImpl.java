@@ -13,14 +13,23 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         // Handle the request -> create response
         MapServiceServer server = new MapServiceServer();
+        Object road = null;
         int id = request.getId();
         Way way = server.getData().getWaysMap().get(id);
+        if(way != null) {
+            road = way; 
+        }
         Relation relation = server.getData().getRelationsMap().get(id);
+        if(relation != null) {
+            road = relation;
+        }
         Element node = server.getData().getNodesMap().get(id);
+        if(node != null) {
+            road = node;
+        }
 
         RoadbyIdResponse response = RoadbyIdResponse.newBuilder()
-                .setField(null, responseObserver)
-                .build();
+                .setField(null, road).build();
                 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
