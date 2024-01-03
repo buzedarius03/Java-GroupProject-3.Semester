@@ -4,11 +4,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Collections;
+import java.util.logging.Logger;
 
 @SpringBootApplication
 public class MapApplication {
-    // private static final Logger logger =
-    // Logger.getLogger(MapApplication.class.getName());
+    private static final Logger logger = Logger.getLogger(MapApplication.class.getName());
+    
     public static void main(String[] args) {
         String middleware_port = System.getenv().getOrDefault("JMAP_MIDDLEWARE_PORT", "8010");
         String jmap_backend_target = System.getenv().getOrDefault("JMAP_BACKEND_TARGET", "localhost:8020");
@@ -24,6 +25,7 @@ public class MapApplication {
         }
         MapLogger.middlewareStartup(Jmap_middleware_port, jmap_backend_target);
         // SpringApplication.run(MapApplication.class, args);
+        logger.info("Starting middleware...");
         var app = new SpringApplication(MapApplication.class);
         app.setDefaultProperties(Collections
                 .singletonMap("server.port", Jmap_middleware_port));
