@@ -5,7 +5,7 @@ import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 import at.tugraz.oop2.Mapservice.MapRequest;
 import at.tugraz.oop2.Mapservice.MapResponse;
 
-public class MapServiceImpl<RoadbyIdRequest, RoadbyIdResponse> extends MapServiceImplBase {
+public class MapServiceImpl extends MapServiceImplBase {
     @Override
     public void getMap(MapRequest request, StreamObserver<MapResponse> responseObserver) {
 
@@ -23,6 +23,8 @@ public class MapServiceImpl<RoadbyIdRequest, RoadbyIdResponse> extends MapServic
 
         // Handle the request -> create response
         int id = request.getRoadId().build();
+        
+
         RoadbyIdResponse response = RoadbyIdResponse.newBuilder()
                 .setField(null, responseObserver)
                 .build();
