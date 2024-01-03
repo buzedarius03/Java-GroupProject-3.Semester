@@ -1,1 +1,0 @@
-a(a(a|(ba*b))b(bab)*a?)|(b(a+bb)?(bab)+a)
