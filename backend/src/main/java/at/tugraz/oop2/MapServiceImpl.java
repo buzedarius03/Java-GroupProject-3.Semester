@@ -5,12 +5,8 @@ import io.grpc.stub.StreamObserver;
 import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
-import org.w3c.dom.Element;
 
-import java.util.Map;
 import java.util.logging.Logger;
-
-import javax.swing.text.html.parser.Entity;
 
 public class MapServiceImpl extends MapServiceImplBase {
 
@@ -29,7 +25,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         logger.info("Received request for road with id " + roadid);
         MapLogger.backendLogRoadRequest((int)roadid);
         
-        Way way = null;//osmData.getWaysMap().get(roadid);
+        OSMWay way = osmData.getWaysMap().get(roadid);
         String name = way.getTags().get("name");
         String type = way.getTags().get(req_type);
         logger.info("Road with id " + roadid + " is " + name + " and of type " + type);
@@ -38,13 +34,10 @@ public class MapServiceImpl extends MapServiceImplBase {
             name = "";
         }
         
-        double[][] coordinates = new double[way.getNodes().size()][2];
-        for (int i = 0; i < way.getNodes().size(); i++) {
-            Element node = way.getNodes().get(i);
-            double lat = Double.parseDouble(node.getAttribute("lat"));
-            double lon = Double.parseDouble(node.getAttribute("lon"));
-            coordinates[i][0] = lat;
-            coordinates[i][1] = lon;
+        double[][] coordinates = new double[way.getGeometry().getNumPoints()][2];
+        for (int i = 0; i < way.getGeometry().getNumPoints(); i++) {
+            coordinates[i][0] = way.getGeometry().getCoordinates()[i].getX();
+            coordinates[i][1] = way.getGeometry().getCoordinates()[i].getY();
         }
 
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()

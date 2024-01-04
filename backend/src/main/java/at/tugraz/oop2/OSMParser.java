@@ -23,7 +23,7 @@ public class OSMParser {
         osmfile = a_osmfile;
     }
 
-    private void parseNodes(Document document, Map<Long, Point> nodesMap) {
+    private void parseNodes(Document document, Map<Long, OSMNode> nodesMap) {
         NodeList nodeList = document.getElementsByTagName("node");
         int numNodes = nodeList.getLength();
         logger.info("Parsing " + numNodes + " nodes.");
@@ -35,13 +35,16 @@ public class OSMParser {
             double lon = Double.parseDouble(nodeElement.getAttribute("lon"));
             Coordinate coord = new Coordinate(lon, lat);
             Point point = geometryFactory.createPoint(coord);
-            nodesMap.put(id, point);
+            Map<String, String> tags = parseTags(nodeElement);
+            OSMNode node = new OSMNode(id, point, tags);
+            nodesMap.put(id, node);
         }
 
         logger.info("Parsed " + nodesMap.size() + " nodes.");
     }
 
-    private void parseWays(Document document, Map<Long, Point> nodesMap, Map<Long, Geometry> waysMap, Map<Long, Boolean> referencedNodes) {
+    private void parseWays(Document document, Map<Long, OSMNode> nodesMap, Map<Long, OSMWay> waysMap,
+            Map<Long, Boolean> referencedNodes) {
         NodeList wayList = document.getElementsByTagName("way");
         int numWays = wayList.getLength();
         logger.info("Parsing " + numWays + " ways.");
@@ -60,13 +63,15 @@ public class OSMParser {
                     if (nd instanceof Element) {
                         Element ndElement = (Element) nd;
                         long nodeId = Long.parseLong(ndElement.getAttribute("ref"));
-                        Point nodePoint = nodesMap.get(nodeId);
-                        if (nodePoint != null) {
-                            coords.add(nodePoint.getCoordinate());
-                            referencedNodes.put(nodeId, Boolean.TRUE);
-                        } else {
-                            logger.info("Node " + j + " of way " + i + " does not exist.");
+                        Point nodePoint;
+                        try {
+                            nodePoint = nodesMap.get(nodeId).getGeometry();
+                        } catch (Exception e) {
+                            logger.warning("Node " + j + " of way " + i + " does not exist.");
+                            continue;
                         }
+                        coords.add(nodePoint.getCoordinate());
+                        referencedNodes.put(nodeId, Boolean.TRUE);
                     }
                 }
 
@@ -82,9 +87,10 @@ public class OSMParser {
                         // Open way or too few points to make a Polygon -> It's a LineString
                         wayGeometry = geometryFactory.createLineString(coordsArray);
                     }
-                    waysMap.put(wayId, wayGeometry); // Store Geometry object
+                    OSMWay way = new OSMWay(wayId, wayGeometry, parseTags(wayElement));
+                    waysMap.put(wayId, way);
                 } else {
-                    logger.info("Way " + wayId + " has less than 2 nodes, ignoring.");
+                    logger.warning("Way " + wayId + " has less than 2 nodes, ignoring.");
                 }
             }
         }
@@ -92,8 +98,8 @@ public class OSMParser {
         logger.info("Parsed " + waysMap.size() + " ways.");
     }
 
-    private void parseRelations(Document document, Map<Long, Point> nodesMap, Map<Long, Geometry> waysMap,
-    Map<Long, GeometryCollection> relationsMap, Map<Long, Boolean> referencedNodes, Map<Long, Boolean> referencedWays) {
+    private void parseRelations(Document document, Map<Long, OSMNode> nodesMap, Map<Long, OSMWay> waysMap,
+            Map<Long, OSMRelation> relationsMap, Map<Long, Boolean> referencedNodes, Map<Long, Boolean> referencedWays) {
 
         NodeList relationList = document.getElementsByTagName("relation");
         int numRelations = relationList.getLength();
@@ -122,12 +128,12 @@ public class OSMParser {
                         String type = memberElement.getAttribute("type");
                         long ref = Long.parseLong(memberElement.getAttribute("ref"));
                         String role = memberElement.getAttribute("role");
-                        Geometry geometry = ("way".equals(type)) ? waysMap.get(ref) : null;
+                        Geometry geometry = ("way".equals(type)) ? waysMap.get(ref).getGeometry() : null;
+
                         if (geometry instanceof LineString && "outer".equals(role)) {
                             Polygon polygon = createPolygonFromLineString((LineString) geometry, waysMap, nodesMap);
                             polygons.add(polygon);
                             referencedWays.put(ref, Boolean.TRUE);
-                            
                         }
                     }
                     member = member.getNextSibling();
@@ -135,9 +141,11 @@ public class OSMParser {
                 GeometryCollection geometryCollection = (polygons.size() == 1)
                         ? geometryFactory.createMultiPolygon(new Polygon[] { polygons.get(0) })
                         : geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
-                relationsMap.put(relationId, geometryCollection);
+
+                OSMRelation relation = new OSMRelation(relationId, geometryCollection, tags);
+                relationsMap.put(relationId, relation);
             } catch (Exception e) {
-                logger.severe("Failed to parse relation ID " + relationId + ": " + e.getMessage());
+                logger.warning("Failed to parse relation ID " + relationId + ": " + e.getMessage());
             }
         }
         logger.info("Parsed " + relationsMap.size() + " relations.");
@@ -158,7 +166,8 @@ public class OSMParser {
         return tags;
     }
 
-    private Polygon createPolygonFromLineString(LineString maybeRing, Map<Long, Geometry> waysMap, Map<Long, Point> nodesMap) {
+    private Polygon createPolygonFromLineString(LineString maybeRing, Map<Long, OSMWay> waysMap,
+            Map<Long, OSMNode> nodesMap) {
 
         Coordinate[] coordinates = maybeRing.getCoordinates();
 
@@ -169,12 +178,14 @@ public class OSMParser {
         if (!coordinates[0].equals2D(coordinates[coordinates.length - 1])) {
             // We must close the ring for JTS to create a valid LinearRing/Polygon
             coordinates = Arrays.copyOf(coordinates, coordinates.length + 1);
-            coordinates[coordinates.length - 1] = coordinates[0]; // close the LinearRing by repeating the first vertex at the end
+            coordinates[coordinates.length - 1] = coordinates[0]; // close the LinearRing by repeating the first vertex
+                                                                  // at the end
         }
 
         LinearRing shell = geometryFactory.createLinearRing(coordinates);
 
-        // Let's assume that inner boundaries (holes) are collected and stored separately and provided already as LinearRing objects
+        // Let's assume that inner boundaries (holes) are collected and stored
+        // separately and provided already as LinearRing objects
         List<LinearRing> holes = getInnerRings(maybeRing, waysMap, nodesMap);
 
         // Convert list to an array for JTS Polygon constructor
@@ -184,8 +195,8 @@ public class OSMParser {
         return geometryFactory.createPolygon(shell, holesArray);
     }
 
-    private List<LinearRing> getInnerRings(LineString outerRing, Map<Long, Geometry> waysMap,
-            Map<Long, Point> nodesMap) {
+    private List<LinearRing> getInnerRings(LineString outerRing, Map<Long, OSMWay> waysMap,
+            Map<Long, OSMNode> nodesMap) {
         return new ArrayList<LinearRing>();
     }
 
@@ -195,18 +206,18 @@ public class OSMParser {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(osmfile);
 
-            Map<Long, Point> nodesMap = new HashMap<>();
+            Map<Long, OSMNode> nodesMap = new HashMap<>();
             Map<Long, Boolean> referencedNodes = new HashMap<>();
 
-            Map<Long, Geometry> waysMap = new HashMap<>();
+            Map<Long, OSMWay> waysMap = new HashMap<>();
             Map<Long, Boolean> referencedWays = new HashMap<>();
 
-            Map<Long, GeometryCollection> relationsMap = new HashMap<>();
+            Map<Long, OSMRelation> relationsMap = new HashMap<>();
 
             parseNodes(document, nodesMap);
             parseWays(document, nodesMap, waysMap, referencedNodes);
 
-            //TODO parse relations does not work completely
+            // TODO parse relations does not work completely
             parseRelations(document, nodesMap, waysMap, relationsMap, referencedNodes, referencedWays);
 
             // retain only nodes that are NOT referenced by any way or relation
@@ -216,7 +227,8 @@ public class OSMParser {
             waysMap.keySet().removeIf(key -> referencedWays.containsKey(key));
 
             logger.info("Parsing complete.");
-            // there should be around 15k Nodes, 63k Ways and 890 Relations left after this..
+            // there should be around 15k Nodes, 63k Ways and 890 Relations left after
+            // this..
 
             OSMData osmData = new OSMData(nodesMap, waysMap, relationsMap);
             return osmData;
