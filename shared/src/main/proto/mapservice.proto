@@ -39,7 +39,8 @@ message EntitybyIdResponse {
 
 message RoadRequest {
     int64 id = 1;
-    Bbox bbox = 2;
+    string type = 2;
+    Bbox bbox = 3;
 }
 
 message AmenityRequest {

@@ -12,8 +12,9 @@ public class EventController {
     MapApplicationClient client = new MapApplicationClient();
     @GetMapping("/amenities")
     public Map<String, Object> getAmenity() {
+        Amenity[] amenities = client.getAmenity("", new double[]{0, 0}, new double[]{0, 0}, 0);     
             return Map.of(
-                    "entries", new Amenity[] { new Amenity() },
+                    "entries", amenities,
                     "paging", Map.of(
                             "skip", 0,
                             "take", 2,
@@ -27,8 +28,9 @@ public class EventController {
 
     @GetMapping("/roads")
     public Map<String, Object> getRoads() {
+        Road[] roads = client.getRoad("", new double[]{0, 0}, new double[]{0, 0});
             return Map.of(
-                    "entries", new Road[]{new Road()},
+                    "entries", roads,
                     "paging", Map.of(
                             "skip", 0,
                             "take", 2,

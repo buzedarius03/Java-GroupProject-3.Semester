@@ -13,6 +13,7 @@ import com.google.protobuf.MapEntry;
 
 import at.tugraz.oop2.MapServiceGrpc;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
+import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.Bbox;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.PointReq;
@@ -65,6 +66,28 @@ public class MapApplicationClient {
         String crs_type = stub.getEntitybyId(request).getCrsType();
         return new Amenity(name, id, geom_type,
          coordinates, crs_type, properties, tags, type);
+    }
+
+    public Road[] getRoad(String road, double[] point, double[] second_edge_point) {
+        //if road == "", we use all roads
+        RoadRequest request;
+
+        request = RoadRequest.newBuilder().setType(road).setBbox(Bbox.newBuilder().setTlX(point[0]).setTlY(point[1])
+        .setBrX(second_edge_point[0]).setBrY(second_edge_point[1]).build()).build();
+
+        Road[] roads = stub.getRoad(request).getEntityList().stream().map(road1 -> {
+            String name = road1.getName();
+            long id = road1.getId();
+            String type = road1.getType();
+            double[][] coordinates = road1.getCoordinatesList().toArray(new double[0][0]);
+            Map<String, String> tags = road1.getTagsMap();
+            String geom_type = road1.getGeomType();
+            Map<String, String> properties = road1.getPropertiesMap();
+            String crs_type = road1.getCrsType();
+            return new Amenity(name, id, geom_type,
+             coordinates, crs_type, properties, tags, type);
+        }).toArray(Road[]::new);
+         return roads;
     }
 
     public Road getRoadbyId(long id) {
