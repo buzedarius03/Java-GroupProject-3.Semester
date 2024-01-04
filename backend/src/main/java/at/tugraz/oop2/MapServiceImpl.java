@@ -5,7 +5,10 @@ import io.grpc.stub.StreamObserver;
 import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
+import at.tugraz.oop2.Mapservice.AmenityRequest;
+import at.tugraz.oop2.Mapservice.EntityResponse;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.text.html.parser.Entity;
@@ -114,5 +117,20 @@ public class MapServiceImpl extends MapServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void getAmenity(AmenityRequest request, StreamObserver<EntityResponse> responseObserver) {
+        String amenity = request.getType();
+        double[] tl = {request.getBbox().getTlX(), request.getBbox().getTlY()};
+        double[] br = {request.getBbox().getBrX(), request.getBbox().getBrY()};
+        double[] point = {request.getPoint().getX(), request.getPoint().getY()};
+        long point_dist = request.getPoint().getDist();
+        if(point_dist != 0)
+        {
 
+        }
+        else
+        {
+
+        }
+    }
 }
