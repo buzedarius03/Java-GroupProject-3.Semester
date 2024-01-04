@@ -1,17 +1,7 @@
 package at.tugraz.oop2;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
-import javax.swing.text.html.parser.Entity;
-
-import org.locationtech.jts.operation.overlay.PointBuilder;
-
-import com.google.protobuf.MapEntry;
-
-import at.tugraz.oop2.MapServiceGrpc;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.Bbox;

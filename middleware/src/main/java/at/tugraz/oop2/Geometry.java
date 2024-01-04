@@ -15,6 +15,7 @@ public class Geometry {
     public Geometry(String a_type, double[][] a_coordinates, String a_crs_type, Map<String, String> a_properties) {
         type = a_type;
         coordinates = a_coordinates;
-        CRS crs = new CRS(a_crs_type, a_properties);
     }
+
+
 }

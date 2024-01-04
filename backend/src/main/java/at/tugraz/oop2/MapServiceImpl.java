@@ -8,6 +8,7 @@ import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
 
 import java.util.logging.Logger;
 
+
 public class MapServiceImpl extends MapServiceImplBase {
 
     private static final Logger logger = Logger.getLogger(MapServiceServer.class.getName());
@@ -43,6 +44,10 @@ public class MapServiceImpl extends MapServiceImplBase {
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
+                .setGeomType("LineString")
+                .setCrsType("EPSG:4326")
+                .putAllTags(way.getTags())
+                .putAllProperties(way.getTags())
                 .build();
                 
         responseObserver.onNext(response);
