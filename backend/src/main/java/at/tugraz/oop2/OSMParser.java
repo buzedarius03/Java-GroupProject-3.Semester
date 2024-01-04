@@ -79,6 +79,10 @@ public class OSMParser {
                     }
                     waysMap.put(wayId, wayGeometry); // Store Geometry object
                 }
+                else {
+                    logger.info("Way " + wayId + " has less than 2 nodes, ignoring.");
+                    waysMap.put(wayId, null); // Store null to indicate that the way is invalid
+                }
             }
         }
         logger.info("Parsed " + numWays + " ways.");
