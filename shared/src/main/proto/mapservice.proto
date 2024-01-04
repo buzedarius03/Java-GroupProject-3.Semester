@@ -7,6 +7,19 @@ message Coordinate {
     repeated double value = 1;
 }
 
+message Bbox {
+    int64 tl_x = 1;
+    int64 tl_y = 2;
+    int64 br_x = 3;
+    int64 br_y = 4; 
+}
+
+message Point {
+    int64 x = 1;
+    int64 y = 2;
+    int64 dist = 3;
+}
+
 message EntitybyIdRequest {
     int64 id = 1;
     string type = 2;
@@ -14,6 +27,7 @@ message EntitybyIdRequest {
 
 message EntitybyIdResponse {
     string name = 1;
+    int64 id = 2;
     string type = 3;
     repeated Coordinate coordinates = 4;
     map<string,string> tags = 5;
@@ -23,6 +37,25 @@ message EntitybyIdResponse {
     map<string,string> proberties = 9;
 }
 
+message RoadRequest {
+    int64 id = 1;
+    Bbox bbox = 2;
+}
+
+message AmenityRequest {
+    int64 id = 1;
+    oneof limitation {
+        Bbox bbox = 2;
+        Point point = 3;
+    }
+}
+
+message EntityResponse {
+    repeated EntitybyIdResponse entity = 1;
+}
+
 service MapService {
     rpc GetEntitybyId(EntitybyIdRequest) returns (EntitybyIdResponse);
+    rpc GetAmenity(AmenityRequest) returns (EntityResponse);
+    rpc GetRoad(RoadRequest) returns (EntityResponse);
 }
