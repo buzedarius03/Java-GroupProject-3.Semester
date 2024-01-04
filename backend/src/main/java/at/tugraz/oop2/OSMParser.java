@@ -29,7 +29,7 @@ public class OSMParser {
 
         for (int i = 0; i < numNodes; i++) {
             Element nodeElement = (Element) nodeList.item(i);
-            long id = Long.parseLong(nodeElement.getAttribute("id"));
+            long   id  = Long.parseLong(nodeElement.getAttribute("id"));
             double lat = Double.parseDouble(nodeElement.getAttribute("lat"));
             double lon = Double.parseDouble(nodeElement.getAttribute("lon"));
             Coordinate coord = new Coordinate(lon, lat);
@@ -40,7 +40,7 @@ public class OSMParser {
         logger.info("Parsed " + numNodes + " nodes.");
     }
 
-    private void parseWays(Document document, Map<Long, Point> nodesMap, Map<Long, Geometry> waysMap) {
+    private void parseWays(Document document, Map<Long, Point> nodesMap, Map<Long, Geometry> waysMap, Map<Long, Boolean> referencedNodes) {
         NodeList wayList = document.getElementsByTagName("way");
         int numWays = wayList.getLength();
 
@@ -61,7 +61,12 @@ public class OSMParser {
                         Point nodePoint = nodesMap.get(nodeId);
                         if (nodePoint != null) {
                             coords.add(nodePoint.getCoordinate());
+                            referencedNodes.put(nodeId, Boolean.TRUE);
+                        } else {
+                            logger.info("Node " + j + " of way " + i + " does not exist.");
                         }
+                    } else {
+                        logger.info("Node " + j + " of way " + i + " is not an Element.");
                     }
                 }
 
@@ -80,10 +85,10 @@ public class OSMParser {
                     waysMap.put(wayId, wayGeometry); // Store Geometry object
                 } else {
                     logger.info("Way " + wayId + " has less than 2 nodes, ignoring.");
-                    waysMap.put(wayId, null); // Store null to indicate that the way is invalid
                 }
             }
         }
+
         logger.info("Parsed " + numWays + " ways.");
     }
 
@@ -204,7 +209,7 @@ public class OSMParser {
                         }
                         relationsMap.put(relationId, (GeometryCollection) relationGeometry);
                     } else {
-                        logger.info("Relation " + i + " has no outer polygon.");
+                        //logger.info("Relation " + i + " has no outer polygon.");
                     }
                 } else {
                     // create a GeometryCollection from the other geometry types
@@ -225,12 +230,17 @@ public class OSMParser {
             Document document = builder.parse(osmfile);
 
             Map<Long, Point> nodesMap = new HashMap<>();
+            Map<Long, Boolean> referencedNodes = new HashMap<>();
             Map<Long, Geometry> waysMap = new HashMap<>();
             Map<Long, GeometryCollection> relationsMap = new HashMap<>();
 
             parseNodes(document, nodesMap);
-            parseWays(document, nodesMap, waysMap);
+            parseWays(document, nodesMap, waysMap, referencedNodes);
             parseRelations(document, nodesMap, waysMap, relationsMap);
+
+            // retain only nodes that are NOT referenced by any way or relation
+            nodesMap.keySet().removeIf(key -> referencedNodes.containsKey(key));
+            
 
             logger.info("Parsing complete.");
 
