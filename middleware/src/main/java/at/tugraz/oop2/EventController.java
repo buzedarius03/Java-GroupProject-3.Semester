@@ -55,10 +55,6 @@ public class EventController {
             @RequestParam(value = "bbox.br.y", defaultValue = "0,0") double bbox_br_y,
             @RequestParam(value = "take", defaultValue = "50") int take,
             @RequestParam(value = "skip", defaultValue = "0") int skip) {
-                if(bbox_br_x == 0 && bbox_br_y == 0 && bbox_tl_x == 0 && bbox_tl_y == 0 && point_x == 0 && point_y == 0)
-                {
-                        //errorhandling
-                }
                 double[] bbox_br = {bbox_br_x, bbox_br_y};
                 double[] bbox_tl = {bbox_tl_x, bbox_tl_y};
         Road[] roads = client.getRoad(road, bbox_tl, bbox_br);
