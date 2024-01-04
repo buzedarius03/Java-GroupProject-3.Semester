@@ -27,7 +27,7 @@ public class MapApplicationClient {
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         long[] child_ids = stub.getEntitybyId(request).getChildIdsList().stream().mapToLong(i -> i).toArray();
         String geom_type = stub.getEntitybyId(request).getGeomType();
-        Map<String, String> properties = stub.getEntitybyId(request).getProbertiesMap();
+        Map<String, String> properties = stub.getEntitybyId(request).getPropertiesMap();
         return new Road(name, id, geom_type,
          coordinates, "name", properties, tags, type, child_ids);
     }
@@ -40,7 +40,7 @@ public class MapApplicationClient {
         double[][] coordinates = stub.getEntitybyId(request).getCoordinatesList().toArray(new double[0][0]);
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         String geom_type = stub.getEntitybyId(request).getGeomType();
-        Map<String, String> properties = stub.getEntitybyId(request).getProbertiesMap();
+        Map<String, String> properties = stub.getEntitybyId(request).getPropertiesMap();
         return new Amenity(name, id, geom_type,
          coordinates, "name", properties, tags, type);
     }
