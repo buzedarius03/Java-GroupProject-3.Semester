@@ -29,7 +29,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         logger.info("Received request for road with id " + roadid);
         MapLogger.backendLogRoadRequest((int)roadid);
         
-        Way way = osmData.getWaysMap().get(roadid);
+        Way way = null;//osmData.getWaysMap().get(roadid);
         String name = way.getTags().get("name");
         String type = way.getTags().get(req_type);
         logger.info("Road with id " + roadid + " is " + name + " and of type " + type);

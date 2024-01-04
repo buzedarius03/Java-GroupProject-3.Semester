@@ -2,19 +2,192 @@ package at.tugraz.oop2;
 
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
-import java.io.IOException;
 import org.xml.sax.*;
-import java.util.logging.Logger;
 
+import org.locationtech.jts.geom.*;
+
+import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Comparator;
 
 public class OSMParser {
     private static final Logger logger = Logger.getLogger(MapServiceServer.class.getName());
     private String osmfile;
+    private GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
     public OSMParser(String a_osmfile) {
         osmfile = a_osmfile;
+    }
+
+    private void parseNodes(Document document, Map<Long, Point> nodesMap) {
+        NodeList nodeList = document.getElementsByTagName("node");
+        int numNodes = nodeList.getLength();
+    
+        for (int i = 0; i < numNodes; i++) {
+            Element nodeElement = (Element) nodeList.item(i);
+            long id = Long.parseLong(nodeElement.getAttribute("id"));
+            double lat = Double.parseDouble(nodeElement.getAttribute("lat"));
+            double lon = Double.parseDouble(nodeElement.getAttribute("lon"));
+            Coordinate coord = new Coordinate(lon, lat);
+            Point point = geometryFactory.createPoint(coord);
+            nodesMap.put(id, point);
+        }
+    
+        logger.info("Parsed " + numNodes + " nodes.");
+    }
+
+    private void parseWays(Document document, Map<Long, Point> nodesMap, Map<Long, Geometry> waysMap) {
+        NodeList wayList = document.getElementsByTagName("way");
+        int numWays = wayList.getLength();
+    
+        for (int i = 0; i < numWays; i++) {
+            Node wayNode = wayList.item(i);
+            if (wayNode instanceof Element) {
+                Element wayElement = (Element) wayNode;
+                long wayId = Long.parseLong(wayElement.getAttribute("id"));
+                List<Coordinate> coords = new ArrayList<>();
+                
+                NodeList ndList = wayElement.getElementsByTagName("nd");
+                int numNodes = ndList.getLength();
+                for (int j = 0; j < numNodes; j++) {
+                    Node nd = ndList.item(j);
+                    if (nd instanceof Element) {
+                        Element ndElement = (Element) nd;
+                        long nodeId = Long.parseLong(ndElement.getAttribute("ref"));
+                        Point nodePoint = nodesMap.get(nodeId);
+                        if (nodePoint != null) {
+                            coords.add(nodePoint.getCoordinate());
+                        }
+                    }
+                }
+                
+                if (coords.size() > 1) {
+                    Coordinate[] coordsArray = coords.toArray(new Coordinate[0]);
+                    Geometry wayGeometry;
+                    
+                    // Check if it's a Polygon (closed way) or LineString
+                    if (coords.get(0).equals2D(coords.get(coords.size() - 1)) && coords.size() > 3) {
+                        // Closed way, more than 3 unique points -> It's a Polygon
+                        wayGeometry = geometryFactory.createPolygon(coordsArray);
+                    } else {
+                        // Open way or too few points to make a Polygon -> It's a LineString
+                        wayGeometry = geometryFactory.createLineString(coordsArray);
+                    }
+                    waysMap.put(wayId, wayGeometry); // Store Geometry object
+                }
+            }
+        }
+        logger.info("Parsed " + numWays + " ways.");
+    }
+
+    private void parseRelations(Document document, Map<Long, Point> nodesMap, Map<Long, Geometry> waysMap, Map<Long, GeometryCollection> relationsMap) {
+        NodeList relationList = document.getElementsByTagName("relation");
+        for (int i = 0; i < relationList.getLength(); i++) {
+            Node relationNode = relationList.item(i);
+            if (relationNode instanceof Element) {
+                Element relationElement = (Element) relationNode;
+                long relationId = Long.parseLong(relationElement.getAttribute("id"));
+    
+                List<Geometry> memberGeometries = new ArrayList<>();
+                List<Geometry> innerGeometries = new ArrayList<>();
+                List<Geometry> outerGeometries = new ArrayList<>();
+                Map<String, String> tags = new HashMap<>();
+    
+                NodeList memberList = relationElement.getElementsByTagName("member");
+                for (int j = 0; j < memberList.getLength(); j++) {
+                    Node memberNode = memberList.item(j);
+                    if (memberNode instanceof Element) {
+                        Element memberElement = (Element) memberNode;
+                        long refId = Long.parseLong(memberElement.getAttribute("ref"));
+                        String memberType = memberElement.getAttribute("type");
+                        String role = memberElement.getAttribute("role");
+    
+                        if ("way".equals(memberType)) {
+                            Geometry wayGeometry = waysMap.get(refId);
+    
+                            if (wayGeometry != null) {
+                                if ("inner".equals(role)) {
+                                    innerGeometries.add(wayGeometry);
+                                } else if ("outer".equals(role)) {
+                                    outerGeometries.add(wayGeometry);
+                                }
+                            }
+                        }
+                    }
+                }
+    
+                NodeList tagList = relationElement.getElementsByTagName("tag");
+                for (int k = 0; k < tagList.getLength(); k++) {
+                    Node tagNode = tagList.item(k);
+                    if (tagNode instanceof Element) {
+                        Element tagElement = (Element) tagNode;
+                        String kAttr = tagElement.getAttribute("k");
+                        String vAttr = tagElement.getAttribute("v");
+                        tags.put(kAttr, vAttr);
+                    }
+                }
+    
+                // If the relation is a multipolygon, attempt to create the appropriate geometry.
+                if (tags.containsKey("type") && "multipolygon".equals(tags.get("type"))) {
+                    // Use the previously separated outer and inner geometries to construct multipolygons
+                    List<Polygon> polygons = new ArrayList<>();
+                    
+                    // Sort by Geometry length to assume that the longest outer is the main one
+                    outerGeometries.sort(Comparator.comparingDouble(Geometry::getLength).reversed());
+    
+                    Polygon outerPolygon = null;
+                    for (Geometry outerGeom : outerGeometries){
+                        if (outerGeom instanceof LinearRing) { // Make sure it's a closed ring
+                            if (outerPolygon == null) {
+                                outerPolygon = geometryFactory.createPolygon((LinearRing) outerGeom);
+                            } else { // already have an outer polygon
+                                LinearRing[] holesArray = innerGeometries.stream()
+                                    .filter(g -> g instanceof LinearRing)
+                                    .map(g -> (LinearRing) g)
+                                    .toArray(LinearRing[]::new);
+                                polygons.add(geometryFactory.createPolygon((LinearRing) outerGeom, holesArray));
+    
+                                // Clear the innerGeometries as they have been used now
+                                innerGeometries.clear();
+                            }
+                        }
+                    }
+    
+                    if (outerPolygon != null) {
+                        if (!innerGeometries.isEmpty()) {
+                            LinearRing[] holesArray = innerGeometries.stream()
+                                    .filter(g -> g instanceof LinearRing)
+                                    .map(g -> (LinearRing) g)
+                                    .toArray(LinearRing[]::new);
+                            polygons.add(geometryFactory.createPolygon((LinearRing) outerPolygon.getExteriorRing(), holesArray));
+                        } else {
+                            // No inner geometries, only a single outer polygon
+                            polygons.add(outerPolygon);
+                        }
+                    }
+    
+                    if (!polygons.isEmpty()) {
+                        // Could be a single polygon or a multipolygon
+                        Geometry relationGeometry;
+                        if(polygons.size() == 1) {
+                            relationGeometry = polygons.get(0);
+                        } else {
+                            Polygon[] polygonArray = polygons.toArray(new Polygon[0]);
+                            relationGeometry = geometryFactory.createMultiPolygon(polygonArray);
+                        }
+                        relationsMap.put(relationId, (GeometryCollection) relationGeometry);
+                    }
+                } else {
+                    // create a GeometryCollection from the other geometry types
+                    relationsMap.put(relationId, geometryFactory.createGeometryCollection(memberGeometries.toArray(new Geometry[0])));
+                }
+            }
+        }
+        logger.info("Parsed " + relationList.getLength() + " relations.");
     }
 
     public OSMData parse() {
@@ -23,113 +196,21 @@ public class OSMParser {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(osmfile);
     
-            // HashMaps for quick ID lookups
-            Map<Long, Element> nodesMap = new HashMap<>();
-            Map<Long, Way> waysMap = new HashMap<>();
-            Map<Long, Relation> relationsMap = new HashMap<>();
+            Map<Long, Point> nodesMap = new HashMap<>();
+            Map<Long, Geometry> waysMap = new HashMap<>();
+            Map<Long, GeometryCollection> relationsMap = new HashMap<>();
     
-            // Parse nodes
-            NodeList nodeList = document.getElementsByTagName("node");
-            int numNodes = nodeList.getLength();
-            for (int i = 0; i < numNodes; i++) {
-                Element nodeElement = (Element) nodeList.item(i);
-                long id = Long.parseLong(nodeElement.getAttribute("id"));
-                //double lat = Double.parseDouble(nodeElement.getAttribute("lat"));
-                //double lon = Double.parseDouble(nodeElement.getAttribute("lon"));
-    
-                Map<String, String> tags = new HashMap<>();
-                NodeList tagList = nodeElement.getElementsByTagName("tag");
-                int numTags = tagList.getLength();
-                for (int j = 0; j < numTags; j++) {
-                    Element tagElement = (Element) tagList.item(j);
-                    String k = tagElement.getAttribute("k");
-                    String v = tagElement.getAttribute("v");
-                    tags.put(k, v);
-                }
-    
-                nodesMap.put(id, nodeElement);
-            }
-            logger.info("Parsing of nodes complete. Parsed " + numNodes + " nodes.");
-    
-            // Parse ways
-            NodeList wayList = document.getElementsByTagName("way");
-            int numWays = wayList.getLength();
-            for (int i = 0; i < numWays; i++) {
-                Element wayElement = (Element) wayList.item(i);
-                long id = Long.parseLong(wayElement.getAttribute("id"));
-    
-                Way way = new Way(id);
-                NodeList ndList = wayElement.getElementsByTagName("nd");
-                numNodes = ndList.getLength();
-                for (int j = 0; j < numNodes; j++) {
-                    Element ndElement = (Element) ndList.item(j);
-                    long ref = Long.parseLong(ndElement.getAttribute("ref"));
-                    way.addNode(nodesMap.get(ref));
-                }
-    
-                Map<String, String> tags = new HashMap<>();
-                NodeList tagList = wayElement.getElementsByTagName("tag");
-                int numTags = tagList.getLength();
-                for (int j = 0; j < numTags; j++) {
-                    Element tagElement = (Element) tagList.item(j);
-                    String k = tagElement.getAttribute("k");
-                    String v = tagElement.getAttribute("v");
-                    tags.put(k, v);
-                }
-                way.setTags(tags);
-    
-                waysMap.put(id, way);
-            }
-            logger.info("Parsing of ways complete. Parsed " + numWays + " ways.");
-    
-            // Parse relations
-            NodeList relationList = document.getElementsByTagName("relation");
-            int numRelations = relationList.getLength();
-            for (int i = 0; i < numRelations; i++) {
-                Element relationElement = (Element) relationList.item(i);
-                long id = Long.parseLong(relationElement.getAttribute("id"));
-    
-                Relation relation = new Relation(id);
-                NodeList memberList = relationElement.getElementsByTagName("member");
-                int numMembers = memberList.getLength();
-                for (int j = 0; j < numMembers; j++) {
-                    Element memberElement = (Element) memberList.item(j);
-                    long ref = Long.parseLong(memberElement.getAttribute("ref"));
-                    String type = memberElement.getAttribute("type");
-                    String role = memberElement.getAttribute("role");
-                    relation.addMember(type, ref, role);
-                }
-    
-                Map<String, String> tags = new HashMap<>();
-                NodeList tagList = relationElement.getElementsByTagName("tag");
-                int numTags = tagList.getLength();
-                for (int j = 0; j < numTags; j++) {
-                    Element tagElement = (Element) tagList.item(j);
-                    String k = tagElement.getAttribute("k");
-                    String v = tagElement.getAttribute("v");
-                    tags.put(k, v);
-                }
-                relation.setTags(tags);
-    
-                relationsMap.put(id, relation);
-            }
-            logger.info("Parsing of relations complete. Parsed " + numRelations + " relations.");
-            
-            // TODO: Implement handling of closed ways and relations...
+            parseNodes(document, nodesMap);
+            parseWays(document, nodesMap, waysMap);
+            parseRelations(document, nodesMap, waysMap, relationsMap);
 
-            // print a random example of each type for debugging
-            Element node = nodesMap.get(21099615L);
-            Way way = waysMap.get(32685265L);
-            Relation relation = relationsMap.get(15743373L);
-            logger.info("Node: " + node.getAttribute("id") + " " + node.getAttribute("lat") + " " + node.getAttribute("lon"));
-            logger.info("Way: " + way.getId() + " " + way.getNodes().size() + " " + way.getTags().get("name"));
-            logger.info("Relation: " + relation.getId() + " " + relation.getMembers().size() + " " + relation.getTags().get("name"));
+            logger.info("Parsing complete.");
 
-            // create an OSMData object and return it
             OSMData osmData = new OSMData(nodesMap, waysMap, relationsMap);
             return osmData;
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.severe("Failed to parse OSM file: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

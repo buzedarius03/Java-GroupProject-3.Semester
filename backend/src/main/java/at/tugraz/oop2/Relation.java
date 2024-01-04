@@ -44,17 +44,5 @@ public class Relation {
             this.ref = ref;
             this.role = role;
         }
-
-        public String getType() {
-            return type;
-        }
-
-        public long getRef() {
-            return ref;
-        }
-
-        public String getRole() {
-            return role;
-        }
     }
 }

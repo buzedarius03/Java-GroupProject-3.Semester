@@ -1,28 +1,31 @@
 package at.tugraz.oop2;
 
 import java.util.Map;
-import org.w3c.dom.Element;
+
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 
 public class OSMData {
-    private Map<Long, Element> nodesMap;
-    private Map<Long, Way> waysMap;
-    private Map<Long, Relation> relationsMap;
+    private Map<Long, Point> nodesMap;
+    private Map<Long, Geometry> waysMap;
+    private Map<Long, GeometryCollection> relationsMap;
 
-    public OSMData(Map<Long, Element> nodesMap, Map<Long, Way> waysMap, Map<Long, Relation> relationsMap) {
+    public OSMData(Map<Long, Point> nodesMap, Map<Long, Geometry> waysMap, Map<Long, GeometryCollection> relationsMap) {
         this.nodesMap = nodesMap;
         this.waysMap = waysMap;
         this.relationsMap = relationsMap;
     }
 
-    public Map<Long, Element> getNodesMap() {
+    public Map<Long, Point> getNodesMap() {
         return nodesMap;
     }
 
-    public Map<Long, Way> getWaysMap() {
+    public Map<Long, Geometry> getWaysMap() {
         return waysMap;
     }
 
-    public Map<Long, Relation> getRelationsMap() {
+    public Map<Long, GeometryCollection> getRelationsMap() {
         return relationsMap;
     }
 }
