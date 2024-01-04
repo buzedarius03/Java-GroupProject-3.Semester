@@ -1,7 +1,6 @@
 package at.tugraz.oop2;
 
 import java.util.Map;
-
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.Bbox;
@@ -46,7 +45,7 @@ public class MapApplicationClient {
 
     public Amenity getAmenitybyId(long id) {
 
-        EntitybyIdRequest request = EntitybyIdRequest.newBuilder().setId(id).setType("highway").build();
+        EntitybyIdRequest request = EntitybyIdRequest.newBuilder().setId(id).setType("amenity").build();
         String name = stub.getEntitybyId(request).getName();
         String type = stub.getEntitybyId(request).getType();
         double[][] coordinates = stub.getEntitybyId(request).getCoordinatesList().toArray(new double[0][0]);
