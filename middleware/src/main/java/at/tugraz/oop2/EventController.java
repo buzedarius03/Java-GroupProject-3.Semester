@@ -19,13 +19,26 @@ public class EventController {
             @RequestParam(value = "bbox.tl.x", defaultValue = "0,0") double bbox_tl_x,
             @RequestParam(value = "bbox.tl.y", defaultValue = "0,0") double bbox_tl_y,
             @RequestParam(value = "bbox.br.x", defaultValue = "0,0") double bbox_br_x,
-            @RequestParam(value = "bbox.br.y", defaultValue = "0,0") double bbox_br_y) {
-        Amenity[] amenities = client.getAmenity("", new double[]{0, 0}, new double[]{0, 0}, 0);     
+            @RequestParam(value = "bbox.br.y", defaultValue = "0,0") double bbox_br_y,
+            @RequestParam(value = "take", defaultValue = "50") int take,
+            @RequestParam(value = "skip", defaultValue = "0") int skip) {
+                if(bbox_br_x == 0 && bbox_br_y == 0 && bbox_tl_x == 0 && bbox_tl_y == 0 && point_x == 0 && point_y == 0)
+                {
+                        //errorhandling
+                }
+                double[] bbox_br = {bbox_br_x, bbox_br_y};
+                double[] point = {point_x, point_y};
+                if(point_dist == 0)
+                {
+                        point[0] = bbox_tl_x;
+                        point[1] = bbox_tl_y;
+                }
+        Amenity[] amenities = client.getAmenity(amenity, point, bbox_br, point_dist);     
             return Map.of(
                     "entries", amenities,
                     "paging", Map.of(
-                            "skip", 0,
-                            "take", 2,
+                            "skip", skip,
+                            "take", take,
                             "total", 3));
     }
 
@@ -35,13 +48,25 @@ public class EventController {
     }
 
     @GetMapping("/roads")
-    public Map<String, Object> getRoads() {
-        Road[] roads = client.getRoad("", new double[]{0, 0}, new double[]{0, 0});
+    public Map<String, Object> getRoads(@RequestParam(value = "road", defaultValue = "") String road,
+            @RequestParam(value = "bbox.tl.x", defaultValue = "0,0") double bbox_tl_x,
+            @RequestParam(value = "bbox.tl.y", defaultValue = "0,0") double bbox_tl_y,
+            @RequestParam(value = "bbox.br.x", defaultValue = "0,0") double bbox_br_x,
+            @RequestParam(value = "bbox.br.y", defaultValue = "0,0") double bbox_br_y,
+            @RequestParam(value = "take", defaultValue = "50") int take,
+            @RequestParam(value = "skip", defaultValue = "0") int skip) {
+                if(bbox_br_x == 0 && bbox_br_y == 0 && bbox_tl_x == 0 && bbox_tl_y == 0 && point_x == 0 && point_y == 0)
+                {
+                        //errorhandling
+                }
+                double[] bbox_br = {bbox_br_x, bbox_br_y};
+                double[] bbox_tl = {bbox_tl_x, bbox_tl_y};
+        Road[] roads = client.getRoad(road, bbox_tl, bbox_br);
             return Map.of(
                     "entries", roads,
                     "paging", Map.of(
-                            "skip", 0,
-                            "take", 2,
+                            "skip", skip,
+                            "take", take,
                             "total", 3));
     }
 
