@@ -116,6 +116,9 @@ public class OSMParser {
             Map<String, String> tags = parseTags(relationElement);
 
             if (!"multipolygon".equals(tags.get("type"))) {
+                logger.warning("Relation ID " + relationId + " is not a multipolygon, ignoring.");
+                OSMRelation relation = new OSMRelation(relationId, null, tags);
+                relationsMap.put(relationId, relation);
                 continue; // We only process multipolygon relations (for now)
             }
 
@@ -134,6 +137,9 @@ public class OSMParser {
                             Polygon polygon = createPolygonFromLineString((LineString) geometry, waysMap, nodesMap);
                             polygons.add(polygon);
                             referencedWays.put(ref, Boolean.TRUE);
+                        } else {
+                            OSMRelation relation = new OSMRelation(relationId, null, tags);
+                            relationsMap.put(relationId, relation);
                         }
                     }
                     member = member.getNextSibling();
