@@ -8,15 +8,15 @@ message Coordinate {
 }
 
 message Bbox {
-    int64 tl_x = 1;
-    int64 tl_y = 2;
-    int64 br_x = 3;
-    int64 br_y = 4; 
+    double tl_x = 1;
+    double tl_y = 2;
+    double br_x = 3;
+    double br_y = 4; 
 }
 
-message Point {
-    int64 x = 1;
-    int64 y = 2;
+message PointReq {
+    double x = 1;
+    double y = 2;
     int64 dist = 3;
 }
 
@@ -44,9 +44,10 @@ message RoadRequest {
 
 message AmenityRequest {
     int64 id = 1;
+    string type = 2;
     oneof limitation {
-        Bbox bbox = 2;
-        Point point = 3;
+        Bbox bbox = 3;
+        PointReq point = 4;
     }
 }
 
