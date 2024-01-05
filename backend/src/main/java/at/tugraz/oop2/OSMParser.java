@@ -58,6 +58,7 @@ public class OSMParser {
 
                 NodeList ndList = wayElement.getElementsByTagName("nd");
                 int numNodes = ndList.getLength();
+                long[] child_ids = new long[numNodes];
                 for (int j = 0; j < numNodes; j++) {
                     Node nd = ndList.item(j);
                     if (nd instanceof Element) {
@@ -72,6 +73,7 @@ public class OSMParser {
                         }
                         coords.add(nodePoint.getCoordinate());
                         referencedNodes.put(nodeId, Boolean.TRUE);
+                        child_ids[j] = nodeId;
                     }
                 }
 
@@ -87,7 +89,7 @@ public class OSMParser {
                         // Open way or too few points to make a Polygon -> It's a LineString
                         wayGeometry = geometryFactory.createLineString(coordsArray);
                     }
-                    OSMWay way = new OSMWay(wayId, wayGeometry, parseTags(wayElement));
+                    OSMWay way = new OSMWay(wayId, wayGeometry, parseTags(wayElement), child_ids);
                     waysMap.put(wayId, way);
                 } else {
                     logger.warning("Way " + wayId + " has less than 2 nodes, ignoring.");
@@ -117,7 +119,7 @@ public class OSMParser {
 
             if (!"multipolygon".equals(tags.get("type"))) {
                 logger.warning("Relation ID " + relationId + " is not a multipolygon, ignoring.");
-                OSMRelation relation = new OSMRelation(relationId, null, tags);
+                OSMRelation relation = new OSMRelation(relationId, null, tags, null);
                 relationsMap.put(relationId, relation);
                 continue; // We only process multipolygon relations (for now)
             }
@@ -138,7 +140,7 @@ public class OSMParser {
                             polygons.add(polygon);
                             referencedWays.put(ref, Boolean.TRUE);
                         } else {
-                            OSMRelation relation = new OSMRelation(relationId, null, tags);
+                            OSMRelation relation = new OSMRelation(relationId, null, tags, null);
                             relationsMap.put(relationId, relation);
                         }
                     }
@@ -148,7 +150,7 @@ public class OSMParser {
                         ? geometryFactory.createMultiPolygon(new Polygon[] { polygons.get(0) })
                         : geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
 
-                OSMRelation relation = new OSMRelation(relationId, geometryCollection, tags);
+                OSMRelation relation = new OSMRelation(relationId, geometryCollection, tags, null);
                 relationsMap.put(relationId, relation);
             } catch (Exception e) {
                 logger.warning("Failed to parse relation ID " + relationId + ": " + e.getMessage());
@@ -223,8 +225,7 @@ public class OSMParser {
             parseNodes(document, nodesMap);
             parseWays(document, nodesMap, waysMap, referencedNodes);
 
-            // TODO parse relations does not work completely
-            parseRelations(document, nodesMap, waysMap, relationsMap, referencedNodes, referencedWays);
+            parseRelations(document, nodesMap, waysMap, relationsMap, referencedNodes, referencedWays);  // relation parsing should be optimized if time allows
 
             // retain only nodes that are NOT referenced by any way or relation
             nodesMap.keySet().removeIf(key -> referencedNodes.containsKey(key));

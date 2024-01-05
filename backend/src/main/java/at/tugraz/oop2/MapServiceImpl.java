@@ -11,6 +11,7 @@ import at.tugraz.oop2.Mapservice.EntityResponse;
 
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.Arrays;
 
 import javax.swing.text.html.parser.Entity;
 
@@ -32,7 +33,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         String name = way.getTags().get("name");
         String type = way.getTags().get(entity_type);
 
-        long[] node_ids = way.getNodes();
+        long[] node_ids = way.getChild_ids();
         
         CoordinateReq[] coordinateReqs = new CoordinateReq[way.getGeometry().getNumPoints()];
         for (int i = 0; i < way.getGeometry().getNumPoints(); i++) {
@@ -40,16 +41,24 @@ public class MapServiceImpl extends MapServiceImplBase {
             getX()).setY(way.getGeometry().getCoordinates()[i].getY()).build();
         }
 
+        double[][] coordinates = new double[1][2];
+        coordinates[0][0] = way.getGeometry().getCoordinates()[0].getX();
+        coordinates[0][1] = way.getGeometry().getCoordinates()[0].getY();
+
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
-                .setName(name)
-                .setType(type)
-                .setGeomType(way.getGeometry().getGeometryType())
-                .setCrsType("EPSG:4326")
-                .putAllTags(way.getTags())
-                .putAllProperties(way.getTags());
+            .setName(name)
+            .setType(type)
+            .setGeomType(way.getGeometry().getGeometryType())
+            .setCrsType("EPSG:4326")
+            .putAllTags(way.getTags())
+            .putAllProperties(way.getTags())
+            .addAllChildIds(Arrays.asList(Arrays.stream(node_ids).boxed().toArray(Long[]::new)));
+            // set all coordinates
+            // .setCoordinates(0, CoordinateReq.newBuilder().setX(coordinates[0][0]).setY(coordinates[0][1]).build());
+
         for(int i = 0; i < coordinateReqs.length; i++)
         {
-            response_Builder.setCoordinates(i, coordinateReqs[i]);
+            //response_Builder.setCoordinates(i, coordinateReqs[i]);
         }
         EntitybyIdResponse response = response_Builder.build();
         return response;
@@ -59,7 +68,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         String name = relation.getTags().get("name");
         String type = relation.getTags().get(entity_type);
 
-        
+        long [] child_ids = relation.getChild_ids();
         
         CoordinateReq[] coordinateReqs = new CoordinateReq[relation.getGeometry().getNumPoints()];
         for (int i = 0; i < relation.getGeometry().getNumPoints(); i++) {
@@ -86,10 +95,12 @@ public class MapServiceImpl extends MapServiceImplBase {
         String name = node.getTags().get("name");
         String type = node.getTags().get(entity_type);
 
-   /*     CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
-CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256");
-MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);*/
-//continue here?
+        /*
+         CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256");
+        MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+        //continue here?
+        */
 
         double[][] coordinates = new double[1][2];
         coordinates[0][0] = node.getGeometry().getCoordinate().getX();
@@ -105,6 +116,7 @@ MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);*/
                 .build();
         return response;
     }
+    
     @Override
     public void getEntitybyId(EntitybyIdRequest request, StreamObserver<EntitybyIdResponse> responseObserver) {
         long roadid = request.getId();
@@ -112,9 +124,17 @@ MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);*/
         logger.info("Received request for road with id " + roadid);
         MapLogger.backendLogRoadRequest((int)roadid);
         
-        OSMWay way = osmData.getWaysMap().get(roadid);
-        OSMNode node = osmData.getNodesMap().get(roadid);
-        OSMRelation relation = osmData.getRelationsMap().get(roadid);
+        OSMWay way = null;
+        OSMNode node = null;
+        OSMRelation relation = null;
+        try {
+        way = osmData.getWaysMap().get(roadid);
+        node = osmData.getNodesMap().get(roadid);
+        relation = osmData.getRelationsMap().get(roadid);
+        } catch (Exception e) {
+            // this is fine, we just didn't one of the types
+        }
+
         EntitybyIdResponse response;
         if (way != null)
             response = getEntityResponsebyWay(way, req_type);

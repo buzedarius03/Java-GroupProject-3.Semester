@@ -7,12 +7,13 @@ public class OSMWay {
     private long id;
     private Geometry geometry;
     private Map<String, String> tags;
-    private boolean isReferenced = false;
+    private long[] child_ids;
 
-    public OSMWay(long id, Geometry geometry, Map<String, String> tags) {
+    public OSMWay(long id, Geometry geometry, Map<String, String> tags, long[] child_ids) {
         this.id = id;
         this.geometry = geometry;
         this.tags = tags;
+        this.child_ids = child_ids;
     }
 
     public long getId() {
@@ -27,12 +28,8 @@ public class OSMWay {
         return tags;
     }
 
-    public boolean isReferenced() {
-        return isReferenced;
-    }
-
-    public void setReferenced(boolean referenced) {
-        isReferenced = referenced;
+    public long[] getChild_ids() {
+        return child_ids;
     }
     
 }
