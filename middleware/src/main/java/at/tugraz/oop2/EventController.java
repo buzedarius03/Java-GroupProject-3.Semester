@@ -64,7 +64,7 @@ public class EventController {
                 double[] bbox_tl = {bbox_tl_x, bbox_tl_y};
         Road[] roads = client.getRoad(road, bbox_tl, bbox_br);
         //Not sure about the next three lines!!!!
-        Road[] roads_taked = Arrays.copyOfRange(roads, skip, Math.min(take + skip, roads.length));
+        Road[] roads_taked = roads;
         int total = roads.length;
             return Map.of(
                     "entries", roads_taked,

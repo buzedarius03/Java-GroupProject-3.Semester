@@ -107,16 +107,6 @@ public class MapServiceImpl extends MapServiceImplBase {
             new Coordinate(br_coord.getX(), tl_coord.getY()), new Coordinate(tl_coord.getX(), br_coord.getY()), tl_coord});
         Geometry point_geom = geometryFactory.createPoint(new Coordinate(point[0], point[1]));
         List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
-        for (OSMWay way : osmData.getWaysMap().values()) {
-            if (way.getTags().get(entity_type) != null && (way.getTags().get(entity_type).equals(type) || type.equals(" "))) {
-                String t = way.getTags().get(entity_type); 
-                if((point_dist == 0  && way.getGeometry().intersects(bbox)) ||
-                 (point_dist != 0 && way.getGeometry().distance(point_geom) <= point_dist))
-                {
-                    response_list.add(getEntityResponsebyWay(way, entity_type));
-                }      
-            }
-        }
         for (OSMNode node : osmData.getNodesMap().values()) {
             if (node.getTags().get(entity_type) != null && (node.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 if((point_dist == 0  && node.getGeometry().intersects(bbox)) ||
@@ -126,7 +116,15 @@ public class MapServiceImpl extends MapServiceImplBase {
                 }      
             }
         }
-
+        for (OSMWay way : osmData.getWaysMap().values()) {
+            if (way.getTags().get(entity_type) != null && (way.getTags().get(entity_type).equals(type) || type.equals(" "))) {
+                if((point_dist == 0  && way.getGeometry().intersects(bbox)) ||
+                 (point_dist != 0 && way.getGeometry().distance(point_geom) <= point_dist))
+                {
+                    response_list.add(getEntityResponsebyWay(way, entity_type));
+                }      
+            }
+        }
         for (OSMRelation relation : osmData.getRelationsMap().values()) {
             if (relation.getTags().get(entity_type) != null && (relation.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 if((point_dist == 0  && relation.getGeometry().intersects(bbox)) ||
