@@ -19,7 +19,7 @@ public class Amenity {
     String type;
     long[] child_ids = {};
 
-    public Amenity(String a_name, long a_id, Map<String, String> a_properties, Map<String, String> a_tags, String a_type, String a_geom_json) {
+    public Amenity(String a_name, long a_id, Map<String, String> a_tags, String a_type, String a_geom_json) {
        name = a_name;
        id = a_id;
        tags = a_tags;

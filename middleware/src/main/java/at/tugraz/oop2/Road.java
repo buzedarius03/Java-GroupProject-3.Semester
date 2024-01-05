@@ -17,7 +17,7 @@ public class Road {
     String type;
     long[] child_ids = {};
 
-    public Road(String a_name, long a_id, Map<String, String> a_properties,  Map<String, String> a_tags, String a_type, long[] a_child_ids, String a_geom_json) {
+    public Road(String a_name, long a_id,  Map<String, String> a_tags, String a_type, long[] a_child_ids, String a_geom_json) {
         name = a_name;
         id = a_id;
         type = a_type;

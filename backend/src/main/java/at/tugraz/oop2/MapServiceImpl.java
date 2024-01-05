@@ -59,7 +59,6 @@ public class MapServiceImpl extends MapServiceImplBase {
             .setId(id)
             .setGeom(geoJson)
             .putAllTags(way.getTags())
-            .putAllProperties(way.getTags())
             .addAllChildIds(Arrays.asList(Arrays.stream(node_ids).boxed().toArray(Long[]::new)));
             
         EntitybyIdResponse response = response_Builder.build();
@@ -79,7 +78,6 @@ public class MapServiceImpl extends MapServiceImplBase {
                 .setId(id)
                 .setGeom(geoJson)
                 .putAllTags(relation.getTags())
-                .putAllProperties(relation.getTags())
                 .addAllChildIds(Arrays.asList(Arrays.stream(child_ids).boxed().toArray(Long[]::new)));
         
         EntitybyIdResponse response = response_Builder.build();
@@ -98,7 +96,6 @@ public class MapServiceImpl extends MapServiceImplBase {
                 .setId(id)
                 .setGeom(geoJson)
                 .putAllTags(node.getTags())
-                .putAllProperties(node.getTags())
                 .build();
         return response;
     }
@@ -112,7 +109,7 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
         for (OSMWay way : osmData.getWaysMap().values()) {
-            if (way.getTags().get(entity_type) != null) {
+            if (way.getTags().get(entity_type) != null && (way.getTags().get(entity_type).equals(type) || type.equals(""))) {
                 if((point_dist == 0  && way.getGeometry().intersects(bbox)) ||
                  (point_dist != 0 && way.getGeometry().distance(point_geom) <= point_dist))
                 {
@@ -121,7 +118,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             }
         }
         for (OSMNode node : osmData.getNodesMap().values()) {
-            if (node.getTags().get(entity_type) != null) {
+            if (node.getTags().get(entity_type) != null && (node.getTags().get(entity_type).equals(type) || type.equals(""))) {
                 if((point_dist == 0  && node.getGeometry().intersects(bbox)) ||
                  (point_dist != 0 && node.getGeometry().distance(point_geom) <= point_dist))
                 {
@@ -131,7 +128,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         }
 
         for (OSMRelation relation : osmData.getRelationsMap().values()) {
-            if (relation.getTags().get(entity_type) != null) {
+            if (relation.getTags().get(entity_type) != null && (relation.getTags().get(entity_type).equals(type) || type.equals(""))) {
                 if((point_dist == 0  && relation.getGeometry().intersects(bbox)) ||
                  (point_dist != 0 && relation.getGeometry().distance(point_geom) <= point_dist))
                 {
@@ -204,7 +201,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
         Coordinate br_coord = new Coordinate(br[0], br[1]);
 
-        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, 0, "road", road);
+        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, 0, "highway", road);
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();

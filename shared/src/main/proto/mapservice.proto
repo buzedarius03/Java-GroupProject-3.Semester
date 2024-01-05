@@ -34,7 +34,6 @@ message EntitybyIdResponse {
     map<string,string> tags = 5;
     repeated int64 child_ids = 6;
     string geom = 7;
-    map<string,string> properties = 9;
 }
 
 message RoadRequest {

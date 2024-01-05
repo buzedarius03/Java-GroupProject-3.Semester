@@ -33,9 +33,8 @@ public class MapApplicationClient {
             long id = amenity1.getId();
             String type = amenity1.getType();
             Map<String, String> tags = amenity1.getTagsMap();
-            Map<String, String> properties = amenity1.getPropertiesMap();
             String geom_json = amenity1.getGeom();
-            return new Amenity(name, id, properties, tags, type, geom_json);
+            return new Amenity(name, id, tags, type, geom_json);
         }).toArray(Amenity[]::new);
          return amenities;
     }
@@ -46,9 +45,8 @@ public class MapApplicationClient {
         String name = stub.getEntitybyId(request).getName();
         String type = stub.getEntitybyId(request).getType();
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
-        Map<String, String> properties = stub.getEntitybyId(request).getPropertiesMap();
         String geom_json = stub.getEntitybyId(request).getGeom();
-        return new Amenity(name, id, properties, tags, type, geom_json);
+        return new Amenity(name, id, tags, type, geom_json);
     }
 
     public Road[] getRoad(String road, double[] point, double[] second_edge_point) {
@@ -62,9 +60,9 @@ public class MapApplicationClient {
             long id = road1.getId();
             String type = road1.getType();
             Map<String, String> tags = road1.getTagsMap();
-            Map<String, String> properties = road1.getPropertiesMap();
+            long[] child_ids = road1.getChildIdsList().stream().mapToLong(i -> i).toArray();
             String geom_json = road1.getGeom();
-            return new Amenity(name, id, properties, tags, type, geom_json);
+            return new Road(name, id, tags, type, child_ids, geom_json);
         }).toArray(Road[]::new);
          return roads;
     }
@@ -76,10 +74,9 @@ public class MapApplicationClient {
         String type = stub.getEntitybyId(request).getType();
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         long[] child_ids = stub.getEntitybyId(request).getChildIdsList().stream().mapToLong(i -> i).toArray();
-        Map<String, String> properties = stub.getEntitybyId(request).getPropertiesMap();
         String geom_json = stub.getEntitybyId(request).getGeom();
 
-        return new Road(name, id, properties, tags, type, child_ids, geom_json);
+        return new Road(name, id, tags, type, child_ids, geom_json);
     }
 
 }
