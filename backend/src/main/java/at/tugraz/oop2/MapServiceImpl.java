@@ -103,7 +103,8 @@ public class MapServiceImpl extends MapServiceImplBase {
         return response;
     }
 
-    private EntityResponse getEntityResponse(Coordinate tl_coord, Coordinate br_coord, double[] point, long point_dist, String entity_type) {
+    private EntityResponse getEntityResponse(Coordinate tl_coord, Coordinate br_coord, double[] point,
+     long point_dist, String entity_type, String type) {
         GeometryFactory geometryFactory = new GeometryFactory();
         Geometry bbox = geometryFactory.createPolygon(new Coordinate[] {tl_coord, br_coord, 
             new Coordinate(br_coord.getX(), tl_coord.getY()), new Coordinate(tl_coord.getX(), br_coord.getY()), tl_coord});
@@ -188,7 +189,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
         Coordinate br_coord = new Coordinate(br[0], br[1]);
 
-        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, point_dist, amenity);
+        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, point_dist, "amenity", amenity);
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -203,7 +204,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
         Coordinate br_coord = new Coordinate(br[0], br[1]);
 
-        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, 0, road);
+        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, 0, "road", road);
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
