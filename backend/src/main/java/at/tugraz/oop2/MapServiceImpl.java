@@ -107,6 +107,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             new Coordinate(br_coord.getX(), tl_coord.getY()), new Coordinate(tl_coord.getX(), br_coord.getY()), tl_coord});
         Geometry point_geom = geometryFactory.createPoint(new Coordinate(point[0], point[1]));
         List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
+
         for (OSMNode node : osmData.getNodesMap().values()) {
             if (node.getTags().get(entity_type) != null && (node.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 if((point_dist == 0  && node.getGeometry().intersects(bbox)) ||
