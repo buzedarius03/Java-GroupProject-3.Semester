@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
 import java.util.Map;
 
 @RestController
@@ -34,12 +36,16 @@ public class EventController {
                         point[1] = bbox_tl_y;
                 }
         Amenity[] amenities = client.getAmenity(amenity, point, bbox_br, point_dist);     
+        //Not sure about the next three lines!!!!
+        Amenity[] amenities_taked = Arrays.copyOfRange(amenities, 0, Math.max(take, amenities.length));
+        skip = amenities.length - amenities_taked.length;
+        int total = skip + take;
             return Map.of(
                     "entries", amenities,
                     "paging", Map.of(
                             "skip", skip,
                             "take", take,
-                            "total", 3));
+                            "total", total));
     }
 
     @GetMapping("/amenities/{id}")
@@ -58,12 +64,16 @@ public class EventController {
                 double[] bbox_br = {bbox_br_x, bbox_br_y};
                 double[] bbox_tl = {bbox_tl_x, bbox_tl_y};
         Road[] roads = client.getRoad(road, bbox_tl, bbox_br);
+        //Not sure about the next three lines!!!!
+        Road[] roads_taked = Arrays.copyOfRange(roads, 0, Math.max(take, roads.length));
+        skip = roads.length - roads_taked.length;
+        int total = skip + take;
             return Map.of(
-                    "entries", roads,
+                    "entries", roads_taked,
                     "paging", Map.of(
                             "skip", skip,
                             "take", take,
-                            "total", 3));
+                            "total", total));
     }
 
     @GetMapping("/roads/{id}")
