@@ -60,20 +60,24 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         
         
-        double[][] coordinates = new double[relation.getGeometry().getNumPoints()][2];
+        CoordinateReq[] coordinateReqs = new CoordinateReq[relation.getGeometry().getNumPoints()];
         for (int i = 0; i < relation.getGeometry().getNumPoints(); i++) {
-            coordinates[i][0] = relation.getGeometry().getCoordinates()[i].getX();
-            coordinates[i][1] = relation.getGeometry().getCoordinates()[i].getY();
+            coordinateReqs[i] = CoordinateReq.newBuilder().setX(relation.getGeometry().getCoordinates()[i].
+            getX()).setY(relation.getGeometry().getCoordinates()[i].getY()).build();
         }
 
-        EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
+        EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
                 .setGeomType(relation.getGeometry().getGeometryType())
                 .setCrsType("EPSG:4326")
                 .putAllTags(relation.getTags())
-                .putAllProperties(relation.getTags())
-                .build();
+                .putAllProperties(relation.getTags());
+        for(int i = 0; i < coordinateReqs.length; i++)
+        {
+            response_Builder.setCoordinates(i, coordinateReqs[i]);
+        }
+        EntitybyIdResponse response = response_Builder.build();
         return response;
     }
 
