@@ -51,10 +51,12 @@ public class MapServiceImpl extends MapServiceImplBase {
         logger.info("Found way with name " + name + " and type " + type);
         String geoJson = geometryToGeoJson(way.getGeometry());
         long[] node_ids = way.getChild_ids();
+        long id = way.getId();
 
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
             .setName(name)
             .setType(type)
+            .setId(id)
             .setGeom(geoJson)
             .putAllTags(way.getTags())
             .putAllProperties(way.getTags())
@@ -69,10 +71,12 @@ public class MapServiceImpl extends MapServiceImplBase {
         String type = relation.getTags().get(entity_type);
         String geoJson = geometryToGeoJson(relation.getGeometry());
         long [] child_ids = relation.getChild_ids();
+        long id = relation.getId();
 
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
+                .setId(id)
                 .setGeom(geoJson)
                 .putAllTags(relation.getTags())
                 .putAllProperties(relation.getTags())
@@ -86,10 +90,12 @@ public class MapServiceImpl extends MapServiceImplBase {
         String name = node.getTags().get("name");
         String type = node.getTags().get(entity_type);
         String geoJson = geometryToGeoJson(node.getGeometry());
+        long id = node.getId();
 
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
+                .setId(id)
                 .setGeom(geoJson)
                 .putAllTags(node.getTags())
                 .putAllProperties(node.getTags())
