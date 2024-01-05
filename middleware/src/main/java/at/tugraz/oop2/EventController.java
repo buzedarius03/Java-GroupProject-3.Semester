@@ -14,7 +14,7 @@ import java.util.Map;
 public class EventController {
     MapApplicationClient client = new MapApplicationClient();
     @GetMapping("/amenities")
-    public Map<String, Object> getAmenity(@RequestParam(value = "amenity", defaultValue = "") String amenity,
+    public Map<String, Object> getAmenity(@RequestParam(value = "amenity", defaultValue = " ") String amenity,
             @RequestParam(value = "point.x", defaultValue = "0,0") double point_x,
             @RequestParam(value = "point.y", defaultValue = "0,0") double point_y,
             @RequestParam(value = "point.d", defaultValue = "0") long point_dist,
@@ -53,7 +53,7 @@ public class EventController {
     }
 
     @GetMapping("/roads")
-    public Map<String, Object> getRoads(@RequestParam(value = "road", defaultValue = "") String road,
+    public Map<String, Object> getRoads(@RequestParam(value = "road", defaultValue = " ") String road,
             @RequestParam(value = "bbox.tl.x", defaultValue = "0,0") double bbox_tl_x,
             @RequestParam(value = "bbox.tl.y", defaultValue = "0,0") double bbox_tl_y,
             @RequestParam(value = "bbox.br.x", defaultValue = "0,0") double bbox_br_x,

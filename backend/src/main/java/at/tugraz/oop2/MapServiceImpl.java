@@ -106,10 +106,10 @@ public class MapServiceImpl extends MapServiceImplBase {
         Geometry bbox = geometryFactory.createPolygon(new Coordinate[] {tl_coord, br_coord, 
             new Coordinate(br_coord.getX(), tl_coord.getY()), new Coordinate(tl_coord.getX(), br_coord.getY()), tl_coord});
         Geometry point_geom = geometryFactory.createPoint(new Coordinate(point[0], point[1]));
-
         List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
         for (OSMWay way : osmData.getWaysMap().values()) {
-            if (way.getTags().get(entity_type) != null && (way.getTags().get(entity_type).equals(type) || type.equals(""))) {
+            if (way.getTags().get(entity_type) != null && (way.getTags().get(entity_type).equals(type) || type.equals(" "))) {
+                String t = way.getTags().get(entity_type); 
                 if((point_dist == 0  && way.getGeometry().intersects(bbox)) ||
                  (point_dist != 0 && way.getGeometry().distance(point_geom) <= point_dist))
                 {
@@ -118,7 +118,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             }
         }
         for (OSMNode node : osmData.getNodesMap().values()) {
-            if (node.getTags().get(entity_type) != null && (node.getTags().get(entity_type).equals(type) || type.equals(""))) {
+            if (node.getTags().get(entity_type) != null && (node.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 if((point_dist == 0  && node.getGeometry().intersects(bbox)) ||
                  (point_dist != 0 && node.getGeometry().distance(point_geom) <= point_dist))
                 {
@@ -128,7 +128,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         }
 
         for (OSMRelation relation : osmData.getRelationsMap().values()) {
-            if (relation.getTags().get(entity_type) != null && (relation.getTags().get(entity_type).equals(type) || type.equals(""))) {
+            if (relation.getTags().get(entity_type) != null && (relation.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 if((point_dist == 0  && relation.getGeometry().intersects(bbox)) ||
                  (point_dist != 0 && relation.getGeometry().distance(point_geom) <= point_dist))
                 {
