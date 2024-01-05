@@ -9,10 +9,18 @@ import at.tugraz.oop2.Mapservice.CoordinateReq;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.EntityResponse;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import java.util.logging.Logger;
+
+import javax.swing.text.html.parser.Entity;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -39,6 +47,7 @@ public class MapServiceImpl extends MapServiceImplBase {
     private EntitybyIdResponse getEntityResponsebyWay(OSMWay way, String entity_type) {
         String name = way.getTags().get("name");
         String type = way.getTags().get(entity_type);
+        logger.info("Found way with name " + name + " and type " + type);
         String geoJson = geometryToGeoJson(way.getGeometry());
         long[] node_ids = way.getChild_ids();
 
@@ -76,16 +85,6 @@ public class MapServiceImpl extends MapServiceImplBase {
         String name = node.getTags().get("name");
         String type = node.getTags().get(entity_type);
         String geoJson = geometryToGeoJson(node.getGeometry());
-
-        CoordinateReferenceSystem sourceCRS = null;
-        CoordinateReferenceSystem targetCRS = null;
-        MathTransform transform = null;
-        try{
-        sourceCRS = CRS.decode("EPSG:4326");
-        targetCRS = CRS.decode("EPSG:31256");
-        transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
-        } catch (Exception e) {
-        }
 
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
@@ -140,14 +139,44 @@ public class MapServiceImpl extends MapServiceImplBase {
         double[] br = {request.getBbox().getBrX(), request.getBbox().getBrY()};
         double[] point = {request.getPoint().getX(), request.getPoint().getY()};
         long point_dist = request.getPoint().getDist();
-        if(point_dist != 0)
-        {
+        Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
+        Coordinate br_coord = new Coordinate(br[0], br[1]);
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Geometry bbox = geometryFactory.createPolygon(new Coordinate[] {tl_coord, br_coord, 
+            new Coordinate(br[0], tl[1]), new Coordinate(tl[0], br[1]), tl_coord});
+        Geometry point_geom = geometryFactory.createPoint(new Coordinate(point[0], point[1]));
 
-        }
-        else
-        {
 
+        List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
+        for (OSMWay way : osmData.getWaysMap().values()) {
+            if (way.getTags().get("amenity") == amenity) {
+                if((point_dist == 0  && way.getGeometry().intersects(bbox)) ||
+                 (point_dist != 0 && way.getGeometry().distance(point_geom) <= point_dist))
+                {
+                    response_list.add(getEntityResponsebyWay(way, "amenity"));
+                }      
+            }
         }
+        for (OSMNode node : osmData.getNodesMap().values()) {
+            if (node.getTags().get("amenity") == amenity) {
+                if((point_dist == 0  && node.getGeometry().intersects(bbox)) ||
+                 (point_dist != 0 && node.getGeometry().distance(point_geom) <= point_dist))
+                {
+                    response_list.add(getEntityResponsebyNode(node, "amenity"));
+                }      
+            }
+        }
+
+        for (OSMRelation relation : osmData.getRelationsMap().values()) {
+            if (relation.getTags().get("amenity") == amenity) {
+                if((point_dist == 0  && relation.getGeometry().intersects(bbox)) ||
+                 (point_dist != 0 && relation.getGeometry().distance(point_geom) <= point_dist))
+                {
+                    response_list.add(getEntityResponsebyRelation(relation, "amenity"));
+                }      
+            }
+        }
+        EntityResponse response = EntityResponse.newBuilder().addAllEntity(response_list).build();
     }
 
 }
