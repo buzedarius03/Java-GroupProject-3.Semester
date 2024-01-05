@@ -5,6 +5,7 @@ import io.grpc.stub.StreamObserver;
 import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
+import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.CoordinateReq;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.EntityResponse;
@@ -95,6 +96,45 @@ public class MapServiceImpl extends MapServiceImplBase {
                 .build();
         return response;
     }
+
+    private EntityResponse getEntityResponse(Coordinate tl_coord, Coordinate br_coord, double[] point, long point_dist, String entity_type) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Geometry bbox = geometryFactory.createPolygon(new Coordinate[] {tl_coord, br_coord, 
+            new Coordinate(br_coord.getX(), tl_coord.getY()), new Coordinate(tl_coord.getX(), br_coord.getY()), tl_coord});
+        Geometry point_geom = geometryFactory.createPoint(new Coordinate(point[0], point[1]));
+
+        List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
+        for (OSMWay way : osmData.getWaysMap().values()) {
+            if (way.getTags().get(entity_type) != null) {
+                if((point_dist == 0  && way.getGeometry().intersects(bbox)) ||
+                 (point_dist != 0 && way.getGeometry().distance(point_geom) <= point_dist))
+                {
+                    response_list.add(getEntityResponsebyWay(way, entity_type));
+                }      
+            }
+        }
+        for (OSMNode node : osmData.getNodesMap().values()) {
+            if (node.getTags().get(entity_type) != null) {
+                if((point_dist == 0  && node.getGeometry().intersects(bbox)) ||
+                 (point_dist != 0 && node.getGeometry().distance(point_geom) <= point_dist))
+                {
+                    response_list.add(getEntityResponsebyNode(node, entity_type));
+                }      
+            }
+        }
+
+        for (OSMRelation relation : osmData.getRelationsMap().values()) {
+            if (relation.getTags().get(entity_type) != null) {
+                if((point_dist == 0  && relation.getGeometry().intersects(bbox)) ||
+                 (point_dist != 0 && relation.getGeometry().distance(point_geom) <= point_dist))
+                {
+                    response_list.add(getEntityResponsebyRelation(relation, entity_type));
+                }      
+            }
+        }
+        EntityResponse response = EntityResponse.newBuilder().addAllEntity(response_list).build();
+        return response;
+    }
     
     @Override
     public void getEntitybyId(EntitybyIdRequest request, StreamObserver<EntitybyIdResponse> responseObserver) {
@@ -141,42 +181,26 @@ public class MapServiceImpl extends MapServiceImplBase {
         long point_dist = request.getPoint().getDist();
         Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
         Coordinate br_coord = new Coordinate(br[0], br[1]);
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Geometry bbox = geometryFactory.createPolygon(new Coordinate[] {tl_coord, br_coord, 
-            new Coordinate(br[0], tl[1]), new Coordinate(tl[0], br[1]), tl_coord});
-        Geometry point_geom = geometryFactory.createPoint(new Coordinate(point[0], point[1]));
 
+        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, point_dist, amenity);
 
-        List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
-        for (OSMWay way : osmData.getWaysMap().values()) {
-            if (way.getTags().get("amenity") == amenity) {
-                if((point_dist == 0  && way.getGeometry().intersects(bbox)) ||
-                 (point_dist != 0 && way.getGeometry().distance(point_geom) <= point_dist))
-                {
-                    response_list.add(getEntityResponsebyWay(way, "amenity"));
-                }      
-            }
-        }
-        for (OSMNode node : osmData.getNodesMap().values()) {
-            if (node.getTags().get("amenity") == amenity) {
-                if((point_dist == 0  && node.getGeometry().intersects(bbox)) ||
-                 (point_dist != 0 && node.getGeometry().distance(point_geom) <= point_dist))
-                {
-                    response_list.add(getEntityResponsebyNode(node, "amenity"));
-                }      
-            }
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 
-        for (OSMRelation relation : osmData.getRelationsMap().values()) {
-            if (relation.getTags().get("amenity") == amenity) {
-                if((point_dist == 0  && relation.getGeometry().intersects(bbox)) ||
-                 (point_dist != 0 && relation.getGeometry().distance(point_geom) <= point_dist))
-                {
-                    response_list.add(getEntityResponsebyRelation(relation, "amenity"));
-                }      
-            }
-        }
-        EntityResponse response = EntityResponse.newBuilder().addAllEntity(response_list).build();
+    @Override
+    public void getRoad(RoadRequest request, StreamObserver<EntityResponse> responseObserver) {
+        String road = request.getType();
+        double[] tl = {request.getBbox().getTlX(), request.getBbox().getTlY()};
+        double[] br = {request.getBbox().getBrX(), request.getBbox().getBrY()};
+        double[] point = {0, 0};
+        Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
+        Coordinate br_coord = new Coordinate(br[0], br[1]);
+
+        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, 0, road);
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
 }
