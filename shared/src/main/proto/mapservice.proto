@@ -33,8 +33,7 @@ message EntitybyIdResponse {
     repeated CoordinateReq coordinates = 4;
     map<string,string> tags = 5;
     repeated int64 child_ids = 6;
-    string geom_type = 7;
-    string crs_type = 8;
+    string geom = 7;
     map<string,string> properties = 9;
 }
 

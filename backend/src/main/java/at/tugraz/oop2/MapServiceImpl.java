@@ -9,11 +9,10 @@ import at.tugraz.oop2.Mapservice.CoordinateReq;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.EntityResponse;
 
-import java.util.Map;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
+
 import java.util.logging.Logger;
 import java.util.Arrays;
-
-import javax.swing.text.html.parser.Entity;
 
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -29,11 +28,19 @@ public class MapServiceImpl extends MapServiceImplBase {
         this.osmData = osmData;
     }
 
+    private String geometryToGeoJson(org.locationtech.jts.geom.Geometry geometry) {
+        GeoJsonWriter writer = new GeoJsonWriter();
+        String geoJson = writer.write(geometry);
+
+        return geoJson;
+    }
+
     private EntitybyIdResponse getEntityResponsebyWay(OSMWay way, String entity_type) {
         String name = way.getTags().get("name");
         String type = way.getTags().get(entity_type);
-
+        String geoJson = geometryToGeoJson(way.getGeometry());
         long[] node_ids = way.getChild_ids();
+
         
         CoordinateReq[] coordinateReqs = new CoordinateReq[way.getGeometry().getNumPoints()];
         for (int i = 0; i < way.getGeometry().getNumPoints(); i++) {
@@ -44,11 +51,11 @@ public class MapServiceImpl extends MapServiceImplBase {
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
             .setName(name)
             .setType(type)
-            .setGeomType(way.getGeometry().getGeometryType())
-            .setCrsType("EPSG:4326")
+            .setGeom(geoJson)
             .putAllTags(way.getTags())
             .putAllProperties(way.getTags())
             .addAllChildIds(Arrays.asList(Arrays.stream(node_ids).boxed().toArray(Long[]::new)));
+            
             // set all coordinates
             for(CoordinateReq coordinateReq : coordinateReqs)
             {
@@ -61,9 +68,10 @@ public class MapServiceImpl extends MapServiceImplBase {
     private EntitybyIdResponse getEntityResponsebyRelation(OSMRelation relation, String entity_type) {
         String name = relation.getTags().get("name");
         String type = relation.getTags().get(entity_type);
-
+        String geoJson = geometryToGeoJson(relation.getGeometry());
         long [] child_ids = relation.getChild_ids();
         
+
         CoordinateReq[] coordinateReqs = new CoordinateReq[relation.getGeometry().getNumPoints()];
         for (int i = 0; i < relation.getGeometry().getNumPoints(); i++) {
             coordinateReqs[i] = CoordinateReq.newBuilder().setX(relation.getGeometry().getCoordinates()[i].
@@ -73,11 +81,13 @@ public class MapServiceImpl extends MapServiceImplBase {
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
-                .setGeomType(relation.getGeometry().getGeometryType())
-                .setCrsType("EPSG:4326")
+                .setGeom(geoJson)
                 .putAllTags(relation.getTags())
-                .putAllProperties(relation.getTags());
-        for(CoordinateReq coordinateReq : coordinateReqs)
+                .putAllProperties(relation.getTags())
+                .addAllChildIds(Arrays.asList(Arrays.stream(child_ids).boxed().toArray(Long[]::new)));
+        
+        
+            for(CoordinateReq coordinateReq : coordinateReqs)
             {
                 response_Builder.addCoordinates(coordinateReq);
             }
@@ -88,6 +98,7 @@ public class MapServiceImpl extends MapServiceImplBase {
     private EntitybyIdResponse getEntityResponsebyNode(OSMNode node, String entity_type) {
         String name = node.getTags().get("name");
         String type = node.getTags().get(entity_type);
+        String geoJson = geometryToGeoJson(node.getGeometry());
 
         /*
          CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
@@ -102,8 +113,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
-                .setGeomType(node.getGeometry().getGeometryType())
-                .setCrsType("EPSG:4326")
+                .setGeom(geoJson)
                 .putAllTags(node.getTags())
                 .putAllProperties(node.getTags())
                 .setCoordinates(0, CoordinateReq.newBuilder().setX(coordinates[0][0]).setY(coordinates[0][1]).build())
@@ -163,4 +173,5 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         }
     }
+    
 }
