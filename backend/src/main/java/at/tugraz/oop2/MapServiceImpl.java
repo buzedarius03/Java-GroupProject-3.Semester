@@ -46,8 +46,8 @@ public class MapServiceImpl extends MapServiceImplBase {
     }
 
     private EntitybyIdResponse getEntityResponsebyWay(OSMWay way, String entity_type) {
-        String name = way.getTags().get("name");
-        String type = way.getTags().get(entity_type);
+        String name = way.getTags().getOrDefault("name", "");
+        String type = way.getTags().getOrDefault(entity_type, "");
         logger.info("Found way with name " + name + " and type " + type);
         String geoJson = geometryToGeoJson(way.getGeometry());
         long[] node_ids = way.getChild_ids();
@@ -66,8 +66,8 @@ public class MapServiceImpl extends MapServiceImplBase {
     }
 
     private EntitybyIdResponse getEntityResponsebyRelation(OSMRelation relation, String entity_type) {
-        String name = relation.getTags().get("name");
-        String type = relation.getTags().get(entity_type);
+        String name = relation.getTags().getOrDefault("name", "");
+        String type = relation.getTags().getOrDefault(entity_type, "");
         String geoJson = geometryToGeoJson(relation.getGeometry());
         long [] child_ids = relation.getChild_ids();
         long id = relation.getId();
@@ -85,8 +85,8 @@ public class MapServiceImpl extends MapServiceImplBase {
     }
 
     private EntitybyIdResponse getEntityResponsebyNode(OSMNode node, String entity_type) {
-        String name = node.getTags().get("name");
-        String type = node.getTags().get(entity_type);
+        String name = node.getTags().getOrDefault("name", "");
+        String type = node.getTags().getOrDefault(entity_type, "");
         String geoJson = geometryToGeoJson(node.getGeometry());
         long id = node.getId();
 
