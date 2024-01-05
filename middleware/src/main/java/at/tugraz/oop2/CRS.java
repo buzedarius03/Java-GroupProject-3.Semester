@@ -4,14 +4,10 @@ import lombok.Getter;
 
 import java.util.Map;
 
-import static java.util.Map.entry;
-
 @Getter
 public class CRS {
-    String type = "name";
-    Map<String, String> properties = Map.ofEntries(
-            entry("name", "EPSG:0")
-    );
+    String type;
+    Map<String, String> properties;
 
     public CRS() {
     }
