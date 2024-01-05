@@ -13,6 +13,7 @@ public class OSMRelation {
         this.id = id;
         this.geometry = geometry;
         this.tags = tags;
+        this.child_ids = child_ids;
     }
 
     public long getId() {
