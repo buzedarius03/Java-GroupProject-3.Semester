@@ -3,8 +3,9 @@ syntax = "proto3";
 package at.tugraz.oop2;
 option java_package = "at.tugraz.oop2";
 
-message Coordinate {
-    repeated double value = 1;
+message CoordinateReq {
+    double x = 1;
+    double y = 2;
 }
 
 message Bbox {
@@ -29,7 +30,7 @@ message EntitybyIdResponse {
     string name = 1;
     int64 id = 2;
     string type = 3;
-    repeated Coordinate coordinates = 4;
+    repeated CoordinateReq coordinates = 4;
     map<string,string> tags = 5;
     repeated int64 child_ids = 6;
     string geom_type = 7;

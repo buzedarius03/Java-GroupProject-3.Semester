@@ -5,6 +5,7 @@ import io.grpc.stub.StreamObserver;
 import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
+import at.tugraz.oop2.Mapservice.CoordinateReq;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.EntityResponse;
 
@@ -77,10 +78,9 @@ public class MapServiceImpl extends MapServiceImplBase {
         String name = node.getTags().get("name");
         String type = node.getTags().get(entity_type);
 
-        CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
+   /*     CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
 CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256");
-MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
-//...
+MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);*/
 //continue here?
 
         double[][] coordinates = new double[1][2];
@@ -94,6 +94,7 @@ MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
                 .setCrsType("EPSG:4326")
                 .putAllTags(node.getTags())
                 .putAllProperties(node.getTags())
+                .setCoordinates(0, CoordinateReq.newBuilder().setX(coordinates[0][0]).setY(coordinates[0][1]).build())
                 .build();
         return response;
     }
