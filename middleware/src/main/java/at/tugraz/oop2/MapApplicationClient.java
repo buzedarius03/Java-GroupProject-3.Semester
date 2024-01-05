@@ -1,6 +1,9 @@
 package at.tugraz.oop2;
 
+import java.util.Comparator;
 import java.util.Map;
+
+
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.Bbox;
@@ -35,7 +38,9 @@ public class MapApplicationClient {
             Map<String, String> tags = amenity1.getTagsMap();
             String geom_json = amenity1.getGeom();
             return new Amenity(name, id, tags, type, geom_json);
-        }).toArray(Amenity[]::new);
+        }).sorted(Comparator.comparingLong(Amenity::getId))
+        .toArray(Amenity[]::new);
+        
          return amenities;
     }
 
@@ -63,7 +68,8 @@ public class MapApplicationClient {
             long[] child_ids = road1.getChildIdsList().stream().mapToLong(i -> i).toArray();
             String geom_json = road1.getGeom();
             return new Road(name, id, tags, type, child_ids, geom_json);
-        }).toArray(Road[]::new);
+        }).sorted(Comparator.comparingLong(Road::getId))
+        .toArray(Road[]::new);
          return roads;
     }
 
