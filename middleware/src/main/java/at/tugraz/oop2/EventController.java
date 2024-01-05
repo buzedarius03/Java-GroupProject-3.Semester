@@ -15,13 +15,13 @@ public class EventController {
     MapApplicationClient client = new MapApplicationClient();
     @GetMapping("/amenities")
     public Map<String, Object> getAmenity(@RequestParam(value = "amenity", defaultValue = " ") String amenity,
-            @RequestParam(value = "point.x", defaultValue = "0,0") double point_x,
-            @RequestParam(value = "point.y", defaultValue = "0,0") double point_y,
+            @RequestParam(value = "point.x", defaultValue = "0.0") double point_x,
+            @RequestParam(value = "point.y", defaultValue = "0.0") double point_y,
             @RequestParam(value = "point.d", defaultValue = "0") long point_dist,
-            @RequestParam(value = "bbox.tl.x", defaultValue = "0,0") double bbox_tl_x,
-            @RequestParam(value = "bbox.tl.y", defaultValue = "0,0") double bbox_tl_y,
-            @RequestParam(value = "bbox.br.x", defaultValue = "0,0") double bbox_br_x,
-            @RequestParam(value = "bbox.br.y", defaultValue = "0,0") double bbox_br_y,
+            @RequestParam(value = "bbox.tl.x", defaultValue = "0.0") double bbox_tl_x,
+            @RequestParam(value = "bbox.tl.y", defaultValue = "0.0") double bbox_tl_y,
+            @RequestParam(value = "bbox.br.x", defaultValue = "0.0") double bbox_br_x,
+            @RequestParam(value = "bbox.br.y", defaultValue = "0.0") double bbox_br_y,
             @RequestParam(value = "take", defaultValue = "50") int take,
             @RequestParam(value = "skip", defaultValue = "0") int skip) {
                 if(bbox_br_x == 0 && bbox_br_y == 0 && bbox_tl_x == 0 && bbox_tl_y == 0 && point_x == 0 && point_y == 0)
@@ -54,10 +54,10 @@ public class EventController {
 
     @GetMapping("/roads")
     public Map<String, Object> getRoads(@RequestParam(value = "road", defaultValue = " ") String road,
-            @RequestParam(value = "bbox.tl.x", defaultValue = "0,0") double bbox_tl_x,
-            @RequestParam(value = "bbox.tl.y", defaultValue = "0,0") double bbox_tl_y,
-            @RequestParam(value = "bbox.br.x", defaultValue = "0,0") double bbox_br_x,
-            @RequestParam(value = "bbox.br.y", defaultValue = "0,0") double bbox_br_y,
+            @RequestParam(value = "bbox.tl.x", defaultValue = "0,#.0") double bbox_tl_x,
+            @RequestParam(value = "bbox.tl.y", defaultValue = "0.0") double bbox_tl_y,
+            @RequestParam(value = "bbox.br.x", defaultValue = "0.0") double bbox_br_x,
+            @RequestParam(value = "bbox.br.y", defaultValue = "0.0") double bbox_br_y,
             @RequestParam(value = "take", defaultValue = "50") int take,
             @RequestParam(value = "skip", defaultValue = "0") int skip) {
                 double[] bbox_br = {bbox_br_x, bbox_br_y};
