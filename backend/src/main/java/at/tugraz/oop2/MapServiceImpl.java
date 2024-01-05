@@ -41,10 +41,6 @@ public class MapServiceImpl extends MapServiceImplBase {
             getX()).setY(way.getGeometry().getCoordinates()[i].getY()).build();
         }
 
-        double[][] coordinates = new double[1][2];
-        coordinates[0][0] = way.getGeometry().getCoordinates()[0].getX();
-        coordinates[0][1] = way.getGeometry().getCoordinates()[0].getY();
-
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
             .setName(name)
             .setType(type)
@@ -54,12 +50,10 @@ public class MapServiceImpl extends MapServiceImplBase {
             .putAllProperties(way.getTags())
             .addAllChildIds(Arrays.asList(Arrays.stream(node_ids).boxed().toArray(Long[]::new)));
             // set all coordinates
-            // .setCoordinates(0, CoordinateReq.newBuilder().setX(coordinates[0][0]).setY(coordinates[0][1]).build());
-
-        for(int i = 0; i < coordinateReqs.length; i++)
-        {
-            //response_Builder.setCoordinates(i, coordinateReqs[i]);
-        }
+            for(CoordinateReq coordinateReq : coordinateReqs)
+            {
+                response_Builder.addCoordinates(coordinateReq);
+            }
         EntitybyIdResponse response = response_Builder.build();
         return response;
     }
@@ -83,10 +77,10 @@ public class MapServiceImpl extends MapServiceImplBase {
                 .setCrsType("EPSG:4326")
                 .putAllTags(relation.getTags())
                 .putAllProperties(relation.getTags());
-        for(int i = 0; i < coordinateReqs.length; i++)
-        {
-            response_Builder.setCoordinates(i, coordinateReqs[i]);
-        }
+        for(CoordinateReq coordinateReq : coordinateReqs)
+            {
+                response_Builder.addCoordinates(coordinateReq);
+            }
         EntitybyIdResponse response = response_Builder.build();
         return response;
     }
