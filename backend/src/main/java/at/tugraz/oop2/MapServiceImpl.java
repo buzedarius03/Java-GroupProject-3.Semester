@@ -32,6 +32,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         String name = way.getTags().get("name");
         String type = way.getTags().get(entity_type);
 
+        long[] node_ids = way.getNodes();
         
         CoordinateReq[] coordinateReqs = new CoordinateReq[way.getGeometry().getNumPoints()];
         for (int i = 0; i < way.getGeometry().getNumPoints(); i++) {
