@@ -30,6 +30,7 @@ public class MapServiceImpl extends MapServiceImplBase {
 
     private String geometryToGeoJson(org.locationtech.jts.geom.Geometry geometry) {
         GeoJsonWriter writer = new GeoJsonWriter();
+
         String geoJson = writer.write(geometry);
 
         return geoJson;
@@ -41,13 +42,6 @@ public class MapServiceImpl extends MapServiceImplBase {
         String geoJson = geometryToGeoJson(way.getGeometry());
         long[] node_ids = way.getChild_ids();
 
-        
-        CoordinateReq[] coordinateReqs = new CoordinateReq[way.getGeometry().getNumPoints()];
-        for (int i = 0; i < way.getGeometry().getNumPoints(); i++) {
-            coordinateReqs[i] = CoordinateReq.newBuilder().setX(way.getGeometry().getCoordinates()[i].
-            getX()).setY(way.getGeometry().getCoordinates()[i].getY()).build();
-        }
-
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
             .setName(name)
             .setType(type)
@@ -56,11 +50,6 @@ public class MapServiceImpl extends MapServiceImplBase {
             .putAllProperties(way.getTags())
             .addAllChildIds(Arrays.asList(Arrays.stream(node_ids).boxed().toArray(Long[]::new)));
             
-            // set all coordinates
-            for(CoordinateReq coordinateReq : coordinateReqs)
-            {
-                response_Builder.addCoordinates(coordinateReq);
-            }
         EntitybyIdResponse response = response_Builder.build();
         return response;
     }
@@ -70,13 +59,6 @@ public class MapServiceImpl extends MapServiceImplBase {
         String type = relation.getTags().get(entity_type);
         String geoJson = geometryToGeoJson(relation.getGeometry());
         long [] child_ids = relation.getChild_ids();
-        
-
-        CoordinateReq[] coordinateReqs = new CoordinateReq[relation.getGeometry().getNumPoints()];
-        for (int i = 0; i < relation.getGeometry().getNumPoints(); i++) {
-            coordinateReqs[i] = CoordinateReq.newBuilder().setX(relation.getGeometry().getCoordinates()[i].
-            getX()).setY(relation.getGeometry().getCoordinates()[i].getY()).build();
-        }
 
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
                 .setName(name)
@@ -86,11 +68,6 @@ public class MapServiceImpl extends MapServiceImplBase {
                 .putAllProperties(relation.getTags())
                 .addAllChildIds(Arrays.asList(Arrays.stream(child_ids).boxed().toArray(Long[]::new)));
         
-        
-            for(CoordinateReq coordinateReq : coordinateReqs)
-            {
-                response_Builder.addCoordinates(coordinateReq);
-            }
         EntitybyIdResponse response = response_Builder.build();
         return response;
     }
@@ -100,15 +77,15 @@ public class MapServiceImpl extends MapServiceImplBase {
         String type = node.getTags().get(entity_type);
         String geoJson = geometryToGeoJson(node.getGeometry());
 
-        /*
-         CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
-        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256");
-        MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
-        //continue here?
-        */
-
-        double[][] coordinates = new double[1][2];
-        coordinates[0][0] = node.getGeometry().getCoordinate().getX();
+        CoordinateReferenceSystem sourceCRS = null;
+        CoordinateReferenceSystem targetCRS = null;
+        MathTransform transform = null;
+        try{
+        sourceCRS = CRS.decode("EPSG:4326");
+        targetCRS = CRS.decode("EPSG:31256");
+        transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+        } catch (Exception e) {
+        }
 
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
@@ -116,7 +93,6 @@ public class MapServiceImpl extends MapServiceImplBase {
                 .setGeom(geoJson)
                 .putAllTags(node.getTags())
                 .putAllProperties(node.getTags())
-                .setCoordinates(0, CoordinateReq.newBuilder().setX(coordinates[0][0]).setY(coordinates[0][1]).build())
                 .build();
         return response;
     }
@@ -173,5 +149,5 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         }
     }
-    
+
 }
