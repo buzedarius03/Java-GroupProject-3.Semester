@@ -13,6 +13,10 @@ import java.util.logging.Logger;
 
 import javax.swing.text.html.parser.Entity;
 
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+
 
 public class MapServiceImpl extends MapServiceImplBase {
 
@@ -38,7 +42,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
-                .setGeomType("LineString")
+                .setGeomType(way.getGeometry().getGeometryType())
                 .setCrsType("EPSG:4326")
                 .putAllTags(way.getTags())
                 .putAllProperties(way.getTags())
@@ -46,7 +50,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         return response;
     }
 
-    private EntitybyIdResponse getEntityResponsebyWay(OSMRelation relation, String entity_type) {
+    private EntitybyIdResponse getEntityResponsebyRelation(OSMRelation relation, String entity_type) {
         String name = relation.getTags().get("name");
         String type = relation.getTags().get(entity_type);
 
@@ -61,7 +65,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
-                .setGeomType("LineString")
+                .setGeomType(relation.getGeometry().getGeometryType())
                 .setCrsType("EPSG:4326")
                 .putAllTags(relation.getTags())
                 .putAllProperties(relation.getTags())
@@ -73,6 +77,12 @@ public class MapServiceImpl extends MapServiceImplBase {
         String name = node.getTags().get("name");
         String type = node.getTags().get(entity_type);
 
+        CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
+CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256");
+MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+//...
+//continue here?
+
         double[][] coordinates = new double[1][2];
         coordinates[0][0] = node.getGeometry().getCoordinate().getX();
         coordinates[0][1] = node.getGeometry().getCoordinate().getY();
@@ -80,7 +90,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
-                .setGeomType("Point")
+                .setGeomType(node.getGeometry().getGeometryType())
                 .setCrsType("EPSG:4326")
                 .putAllTags(node.getTags())
                 .putAllProperties(node.getTags())
@@ -89,7 +99,6 @@ public class MapServiceImpl extends MapServiceImplBase {
     }
     @Override
     public void getEntitybyId(EntitybyIdRequest request, StreamObserver<EntitybyIdResponse> responseObserver) {
-
         long roadid = request.getId();
         String req_type = request.getType();
         logger.info("Received request for road with id " + roadid);
@@ -98,7 +107,6 @@ public class MapServiceImpl extends MapServiceImplBase {
         OSMWay way = osmData.getWaysMap().get(roadid);
         OSMNode node = osmData.getNodesMap().get(roadid);
         OSMRelation relation = osmData.getRelationsMap().get(roadid);
-
         EntitybyIdResponse response;
         if (way != null)
             response = getEntityResponsebyWay(way, req_type);
@@ -106,7 +114,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             response = getEntityResponsebyNode(node, req_type);
         }
         else if (relation != null){
-            response = getEntityResponsebyWay(way, req_type);
+            response = getEntityResponsebyRelation(relation, req_type);
         }
         else{
             logger.info("No entity found with id " + roadid);
