@@ -33,21 +33,24 @@ public class MapServiceImpl extends MapServiceImplBase {
         String type = way.getTags().get(entity_type);
 
         
-        
-        double[][] coordinates = new double[way.getGeometry().getNumPoints()][2];
+        CoordinateReq[] coordinateReqs = new CoordinateReq[way.getGeometry().getNumPoints()];
         for (int i = 0; i < way.getGeometry().getNumPoints(); i++) {
-            coordinates[i][0] = way.getGeometry().getCoordinates()[i].getX();
-            coordinates[i][1] = way.getGeometry().getCoordinates()[i].getY();
+            coordinateReqs[i] = CoordinateReq.newBuilder().setX(way.getGeometry().getCoordinates()[i].
+            getX()).setY(way.getGeometry().getCoordinates()[i].getY()).build();
         }
 
-        EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
+        EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
                 .setGeomType(way.getGeometry().getGeometryType())
                 .setCrsType("EPSG:4326")
                 .putAllTags(way.getTags())
-                .putAllProperties(way.getTags())
-                .build();
+                .putAllProperties(way.getTags());
+        for(int i = 0; i < coordinateReqs.length; i++)
+        {
+            response_Builder.setCoordinates(i, coordinateReqs[i]);
+        }
+        EntitybyIdResponse response = response_Builder.build();
         return response;
     }
 
@@ -85,7 +88,6 @@ MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);*/
 
         double[][] coordinates = new double[1][2];
         coordinates[0][0] = node.getGeometry().getCoordinate().getX();
-        coordinates[0][1] = node.getGeometry().getCoordinate().getY();
 
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
