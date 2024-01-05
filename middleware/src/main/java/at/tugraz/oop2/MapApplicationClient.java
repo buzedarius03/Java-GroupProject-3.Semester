@@ -1,10 +1,14 @@
 package at.tugraz.oop2;
 
 import java.util.Map;
+
+import org.checkerframework.checker.units.qual.C;
+
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.Bbox;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
+import at.tugraz.oop2.Mapservice.CoordinateReq;
 import at.tugraz.oop2.Mapservice.PointReq;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -32,7 +36,13 @@ public class MapApplicationClient {
             String name = amenity1.getName();
             long id = amenity1.getId();
             String type = amenity1.getType();
-            double[][] coordinates = amenity1.getCoordinatesList().toArray(new double[0][0]);
+            CoordinateReq[] coordinatereqs = amenity1.getCoordinatesList().toArray(new CoordinateReq[0]);
+            double[][] coordinates = new double[coordinatereqs.length][2];
+            for(int i = 0; i < coordinatereqs.length; i++)
+            {
+                coordinates[i][0] = coordinatereqs[i].getX();
+                coordinates[i][1] = coordinatereqs[i].getY();
+            }
             Map<String, String> tags = amenity1.getTagsMap();
             String geom_type = amenity1.getGeomType();
             Map<String, String> properties = amenity1.getPropertiesMap();
@@ -48,7 +58,13 @@ public class MapApplicationClient {
         EntitybyIdRequest request = EntitybyIdRequest.newBuilder().setId(id).setType("amenity").build();
         String name = stub.getEntitybyId(request).getName();
         String type = stub.getEntitybyId(request).getType();
-        double[][] coordinates = stub.getEntitybyId(request).getCoordinatesList().toArray(new double[0][0]);
+        CoordinateReq[] coordinatereqs = stub.getEntitybyId(request).getCoordinatesList().toArray(new CoordinateReq[0]);
+            double[][] coordinates = new double[coordinatereqs.length][2];
+            for(int i = 0; i < coordinatereqs.length; i++)
+            {
+                coordinates[i][0] = coordinatereqs[i].getX();
+                coordinates[i][1] = coordinatereqs[i].getY();
+            }
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         String geom_type = stub.getEntitybyId(request).getGeomType();
         Map<String, String> properties = stub.getEntitybyId(request).getPropertiesMap();
@@ -68,7 +84,13 @@ public class MapApplicationClient {
             String name = road1.getName();
             long id = road1.getId();
             String type = road1.getType();
-            double[][] coordinates = road1.getCoordinatesList().toArray(new double[0][0]);
+            CoordinateReq[] coordinatereqs = road1.getCoordinatesList().toArray(new CoordinateReq[0]);
+            double[][] coordinates = new double[coordinatereqs.length][2];
+            for(int i = 0; i < coordinatereqs.length; i++)
+            {
+                coordinates[i][0] = coordinatereqs[i].getX();
+                coordinates[i][1] = coordinatereqs[i].getY();
+            }
             Map<String, String> tags = road1.getTagsMap();
             String geom_type = road1.getGeomType();
             Map<String, String> properties = road1.getPropertiesMap();
@@ -84,7 +106,13 @@ public class MapApplicationClient {
         EntitybyIdRequest request = EntitybyIdRequest.newBuilder().setId(id).setType("highway").build();
         String name = stub.getEntitybyId(request).getName();
         String type = stub.getEntitybyId(request).getType();
-        double[][] coordinates = stub.getEntitybyId(request).getCoordinatesList().toArray(new double[0][0]);
+        CoordinateReq[] coordinatereqs = stub.getEntitybyId(request).getCoordinatesList().toArray(new CoordinateReq[0]);
+        double[][] coordinates = new double[coordinatereqs.length][2];
+        for(int i = 0; i < coordinatereqs.length; i++)
+        {
+            coordinates[i][0] = coordinatereqs[i].getX();
+            coordinates[i][1] = coordinatereqs[i].getY();
+        }
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         long[] child_ids = stub.getEntitybyId(request).getChildIdsList().stream().mapToLong(i -> i).toArray();
         String geom_type = stub.getEntitybyId(request).getGeomType();
