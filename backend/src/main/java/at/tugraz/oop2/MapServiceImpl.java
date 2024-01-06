@@ -42,6 +42,9 @@ public class MapServiceImpl extends MapServiceImplBase {
         GeoJsonWriter writer = new GeoJsonWriter();
 
         String geoJson = writer.write(geometry);
+        // replace "EPSG:4326" with "EPSG:0" because the frontend expects the latter ??
+        geoJson = geoJson.replace("EPSG:4326", "EPSG:0");
+        logger.info(geoJson);
 
         return geoJson;
     }
@@ -177,7 +180,6 @@ public class MapServiceImpl extends MapServiceImplBase {
     public void getEntitybyId(EntitybyIdRequest request, StreamObserver<EntitybyIdResponse> responseObserver) {
         long roadid = request.getId();
         String req_type = request.getType();
-        logger.info("Received request for road with id " + roadid);
         MapLogger.backendLogRoadRequest((int)roadid);
         
         OSMWay way = null;
