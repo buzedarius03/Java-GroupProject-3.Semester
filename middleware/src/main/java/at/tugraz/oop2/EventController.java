@@ -1,5 +1,6 @@
 package at.tugraz.oop2;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,7 +13,14 @@ import java.util.Map;
 @RestController
 
 public class EventController {
-    MapApplicationClient client = new MapApplicationClient();
+    @Value("${jmap.backend.target}")
+    int port = 8020;
+    MapApplicationClient client = new MapApplicationClient(port);
+
+        public EventController(@Value("${jmap.backend.target}") int port) {
+        this.port = port;
+        }
+
     @GetMapping("/amenities")
     public Map<String, Object> getAmenity(@RequestParam(value = "amenity", defaultValue = " ") String amenity,
             @RequestParam(value = "point.x", defaultValue = "0.0") double point_x,
@@ -36,7 +44,7 @@ public class EventController {
                         point[1] = bbox_tl_y;
                 }
         Amenity[] amenities = client.getAmenity(amenity, point, bbox_br, point_dist);     
-        //Not sure about the next three lines!!!!
+        // Not sure about the next three lines!!!!
         Amenity[] amenities_taked = Arrays.copyOfRange(amenities, skip, Math.min(take + skip, amenities.length));
         int total = amenities.length;
             return Map.of(
@@ -63,7 +71,7 @@ public class EventController {
                 double[] bbox_br = {bbox_br_x, bbox_br_y};
                 double[] bbox_tl = {bbox_tl_x, bbox_tl_y};
         Road[] roads = client.getRoad(road, bbox_tl, bbox_br);
-        //Not sure about the next three lines!!!!
+        // Not sure about the next three lines!!!!
         Road[] roads_taked = Arrays.copyOfRange(roads, skip, Math.min(take + skip, roads.length));
         int total = roads.length;
             return Map.of(

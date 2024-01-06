@@ -23,12 +23,24 @@ public class MapApplication {
         } catch (Exception e) {
             Jmap_middleware_port = 8010;
         }
+
+        int Jmap_backend_port;
+        try {
+            Jmap_backend_port = Integer.parseInt(jmap_backend_target.split(":")[1]);
+            if (Jmap_backend_port < 0 || Jmap_backend_port > 65535) {
+                Jmap_backend_port = 8020;
+            }
+        } catch (Exception e) {
+            Jmap_backend_port = 8020;
+        }
+
+
         MapLogger.middlewareStartup(Jmap_middleware_port, jmap_backend_target);
-        // SpringApplication.run(MapApplication.class, args);
         logger.info("Starting middleware...");
         var app = new SpringApplication(MapApplication.class);
         app.setDefaultProperties(Collections
                 .singletonMap("server.port", Jmap_middleware_port));
+        System.setProperty("jmap.backend.target", jmap_backend_target);
         app.run();
     }
 }

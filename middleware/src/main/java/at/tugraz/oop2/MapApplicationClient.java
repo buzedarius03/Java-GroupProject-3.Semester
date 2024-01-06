@@ -13,7 +13,17 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 public class MapApplicationClient {
-    ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8020).usePlaintext().build();
+    int port = 8020;
+
+    //Constructors
+    public MapApplicationClient() {
+    }
+
+    public MapApplicationClient(int port) {
+        this.port = port;
+    }
+    
+    ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port).usePlaintext().build();
     MapServiceGrpc.MapServiceBlockingStub stub = MapServiceGrpc.newBlockingStub(channel);
 
     public Amenity[] getAmenity(String amenity, double[] point, double[] second_edge_point, long dist) {
