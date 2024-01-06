@@ -17,7 +17,6 @@ public class Amenity {
     JSONObject geom;
     Map<String, String> tags;
     String type;
-    long[] child_ids = {};
 
     public Amenity(String a_name, long a_id, Map<String, String> a_tags, String a_type, String a_geom_json) {
        name = a_name;
