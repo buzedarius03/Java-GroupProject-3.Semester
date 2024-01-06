@@ -13,18 +13,18 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 public class MapApplicationClient {
-    private final int port;
+    private final String target;
     private final ManagedChannel channel;
     private final MapServiceGrpc.MapServiceBlockingStub stub;
     private static final Logger logger = Logger.getLogger(MapApplication.class.getName());
 
 
-    public MapApplicationClient(int port) {
-        this.port = port;
+    public MapApplicationClient(String target) {
+        this.target = target;
         
-        channel = ManagedChannelBuilder.forAddress("localhost", port).usePlaintext().build();
+        channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         stub = MapServiceGrpc.newBlockingStub(channel);
-        logger.info("MAC: Connecting to Backend " + "localhost" + ":" + port);
+        logger.info("MAC: Connecting to Backend " + "localhost" + ":" + target);
     }
 
     public Amenity[] getAmenity(String amenity, double[] point, double[] second_edge_point, long dist) {
