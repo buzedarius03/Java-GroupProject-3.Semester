@@ -5,7 +5,6 @@ import org.locationtech.jts.geom.Envelope;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.List;
 import javax.imageio.ImageIO;
 
 public class OSMTileRenderer {

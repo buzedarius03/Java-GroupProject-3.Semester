@@ -6,7 +6,6 @@ import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
 import at.tugraz.oop2.Mapservice.RoadRequest;
-import at.tugraz.oop2.Mapservice.CoordinateReq;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.EntityResponse;
 
@@ -17,7 +16,6 @@ import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import java.util.logging.Logger;
 
-import javax.swing.text.html.parser.Entity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,9 +40,8 @@ public class MapServiceImpl extends MapServiceImplBase {
         GeoJsonWriter writer = new GeoJsonWriter();
 
         String geoJson = writer.write(geometry);
-        // replace "EPSG:4326" with "EPSG:0" because the frontend expects the latter ??
-        geoJson = geoJson.replace("EPSG:4326", "EPSG:0");
-        logger.info(geoJson);
+        // replace "EPSG:4326" with "EPSG:0"? this ist just a test bc i dont know how what kind of model epsg:0 is??
+        // geoJson = geoJson.replace("EPSG:4326", "EPSG:0"); // disabled for now
 
         return geoJson;
     }
