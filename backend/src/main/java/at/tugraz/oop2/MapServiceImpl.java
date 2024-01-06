@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -108,31 +109,64 @@ public class MapServiceImpl extends MapServiceImplBase {
         Geometry point_geom = geometryFactory.createPoint(new Coordinate(point[0], point[1]));
         List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
 
+        CoordinateReferenceSystem sourceCRS = null; 
+        CoordinateReferenceSystem targetCRS = null;
+        MathTransform transform = null;
+        Geometry bbox_geom = null;
+        Geometry point_geom_transformed = null;
+        try {
+            sourceCRS = CRS.decode("EPSG:4326");
+            targetCRS = CRS.decode("EPSG:31256");
+            transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+            bbox_geom = JTS.transform(bbox, transform);
+            point_geom_transformed = JTS.transform(point_geom, transform);
+        } catch (Exception e) {
+            logger.info("Error transforming bbox or point to EPSG:31256");
+        }
+
         for (OSMNode node : osmData.getNodesMap().values()) {
             if (node.getTags().get(entity_type) != null && (node.getTags().get(entity_type).equals(type) || type.equals(" "))) {
-                if((point_dist == 0  && node.getGeometry().intersects(bbox)) ||
-                 (point_dist != 0 && node.getGeometry().distance(point_geom) <= point_dist))
-                {
-                    response_list.add(getEntityResponsebyNode(node, entity_type));
-                }      
+                Geometry node_geom = node.getGeometry();
+                try{
+                    node_geom = JTS.transform(node_geom, transform);
+                    if((point_dist == 0  && node_geom.intersects(bbox_geom)) ||
+                    (point_dist != 0 && node_geom.distance(point_geom_transformed) <= point_dist))
+                    {
+                        response_list.add(getEntityResponsebyNode(node, entity_type));
+                    }
+                } catch (Exception e) {
+                    logger.info("Error transforming node to EPSG:31256");
+                }    
             }
         }
         for (OSMWay way : osmData.getWaysMap().values()) {
             if (way.getTags().get(entity_type) != null && (way.getTags().get(entity_type).equals(type) || type.equals(" "))) {
-                if((point_dist == 0  && way.getGeometry().intersects(bbox)) ||
-                 (point_dist != 0 && way.getGeometry().distance(point_geom) <= point_dist))
-                {
-                    response_list.add(getEntityResponsebyWay(way, entity_type));
-                }      
+                Geometry way_geom = way.getGeometry();
+                try{
+                    way_geom = JTS.transform(way_geom, transform);
+                    if((point_dist == 0  && way_geom.intersects(bbox_geom)) ||
+                    (point_dist != 0 && way_geom.distance(point_geom_transformed) <= point_dist))
+                    {
+                        response_list.add(getEntityResponsebyWay(way, entity_type));
+                    }
+                } catch (Exception e) {
+                    logger.info("Error transforming way to EPSG:31256");
+                }   
             }
         }
         for (OSMRelation relation : osmData.getRelationsMap().values()) {
             if (relation.getTags().get(entity_type) != null && (relation.getTags().get(entity_type).equals(type) || type.equals(" "))) {
-                if((point_dist == 0  && relation.getGeometry().intersects(bbox)) ||
-                 (point_dist != 0 && relation.getGeometry().distance(point_geom) <= point_dist))
-                {
-                    response_list.add(getEntityResponsebyRelation(relation, entity_type));
-                }      
+                Geometry relation_geom = relation.getGeometry();
+                try{
+                    relation_geom = JTS.transform(relation_geom, transform);
+                    if((point_dist == 0  && relation_geom.intersects(bbox_geom)) ||
+                    (point_dist != 0 && relation_geom.distance(point_geom_transformed) <= point_dist))
+                    {
+                        response_list.add(getEntityResponsebyRelation(relation, entity_type));
+                    }
+                } catch (Exception e) {
+                    logger.info("Error transforming relation to EPSG:31256");
+                } 
             }
         }
         EntityResponse response = EntityResponse.newBuilder().addAllEntity(response_list).build();

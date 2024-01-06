@@ -30,7 +30,7 @@ public class Exception_Handler{
     @ExceptionHandler(InternalError.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    protected Error_Response handleInternalError(InternalError ex)
+    protected Error_Response handleInternalError(InternalServerError ex)
     {
         return new Error_Response(ex.getMessage());
     }

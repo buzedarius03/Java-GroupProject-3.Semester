@@ -20,7 +20,7 @@ public class MapApplicationClient {
         //If dist == 0, we use bbox, otherwise we use points
         //if amenity == "", we use all amenities
         AmenityRequest request;
-        if(dist == 0)
+        if(dist != 0)
         {   
             request = AmenityRequest.newBuilder().setType(amenity).setPoint(PointReq.newBuilder().setX(point[0]).setY(point[1])
             .setDist(dist).build()).build();
