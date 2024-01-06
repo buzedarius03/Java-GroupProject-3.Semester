@@ -2,7 +2,7 @@ package at.tugraz.oop2;
 
 import java.util.Comparator;
 import java.util.Map;
-
+import java.util.logging.Logger;
 
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
@@ -13,18 +13,19 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 public class MapApplicationClient {
-    int port = 8020;
+    private final int port;
+    private final ManagedChannel channel;
+    private final MapServiceGrpc.MapServiceBlockingStub stub;
+    private static final Logger logger = Logger.getLogger(MapApplication.class.getName());
 
-    //Constructors
-    public MapApplicationClient() {
-    }
 
     public MapApplicationClient(int port) {
         this.port = port;
+        
+        channel = ManagedChannelBuilder.forAddress("localhost", port).usePlaintext().build();
+        stub = MapServiceGrpc.newBlockingStub(channel);
+        logger.info("MAC: Connecting to Backend " + "localhost" + ":" + port);
     }
-    
-    ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port).usePlaintext().build();
-    MapServiceGrpc.MapServiceBlockingStub stub = MapServiceGrpc.newBlockingStub(channel);
 
     public Amenity[] getAmenity(String amenity, double[] point, double[] second_edge_point, long dist) {
         //If dist == 0, we use bbox, otherwise we use points

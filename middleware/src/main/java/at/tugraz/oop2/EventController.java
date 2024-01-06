@@ -6,18 +6,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.logging.Logger;
+
 import java.util.Arrays;
 import java.util.Map;
 
 @RestController
 
 public class EventController {
-    @Value("${jmap.backend.target}")
-    int port = 8020;
-    MapApplicationClient client = new MapApplicationClient(port);
 
-        public EventController(@Value("${jmap.backend.target}") int port) {
-        this.port = port;
+        private static final Logger logger = Logger.getLogger(MapApplication.class.getName());
+        private final MapApplicationClient client;
+        int port;
+
+        public EventController(@Value("${jmap.backend.target}") String target) {
+                String[] parts = target.split(":");
+                String host = parts[0];
+                int port = Integer.parseInt(parts[1]);
+                this.port = port;
+                logger.info("Connecting to Backend " + host + ":" + port);
+                client = new MapApplicationClient(port);
         }
 
     @GetMapping("/amenities")
