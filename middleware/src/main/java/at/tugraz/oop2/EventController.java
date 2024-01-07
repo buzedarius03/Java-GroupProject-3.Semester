@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.util.logging.Logger;
 
 import java.util.Arrays;
@@ -106,7 +110,13 @@ public class EventController {
                         double[] bbox_tl = {bbox_tl_x, bbox_tl_y};
                 String landusages = client.getUsageInfo(usage, bbox_tl, bbox_br);
                 
-                return Map.of(
-                        "entries", landusages);
+                JSONParser parser = new JSONParser();
+                JSONObject json = null;
+                try {
+                        json = (JSONObject) parser.parse(landusages);
+                } catch (ParseException e) {
+                        e.printStackTrace();
+                }
+                return json; // Could not be bothered to make a new class for this
         }
 }
