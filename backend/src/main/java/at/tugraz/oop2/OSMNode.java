@@ -7,12 +7,13 @@ public class OSMNode {
     private long id;
     private Point geometry;
     private Map<String, String> tags;
-    private boolean isReferenced = false;
+    private boolean isReferenced;
 
     public OSMNode(long id, Point geometry, Map<String, String> tags) {
         this.id = id;
         this.geometry = geometry;
         this.tags = tags;
+        isReferenced = false;
     }
 
     public long getId() {

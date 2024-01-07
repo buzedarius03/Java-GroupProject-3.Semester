@@ -122,6 +122,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             point_geom_transformed = JTS.transform(point_geom, transform);
         } catch (Exception e) {
             logger.info("Error transforming bbox or point to EPSG:31256");
+            logger.info(e.toString());
         }
 
         for (OSMNode node : osmData.getNodesMap().values()) {
@@ -136,6 +137,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                     }
                 } catch (Exception e) {
                     logger.info("Error transforming node to EPSG:31256");
+                    logger.info(e.toString());
                 }    
             }
         }
@@ -151,6 +153,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                     }
                 } catch (Exception e) {
                     logger.info("Error transforming way to EPSG:31256");
+                    logger.info(e.toString());
                 }   
             }
         }
@@ -166,6 +169,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                     }
                 } catch (Exception e) {
                     logger.info("Error transforming relation to EPSG:31256");
+                    logger.info(e.toString());
                 } 
             }
         }
