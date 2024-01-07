@@ -16,9 +16,8 @@ import java.util.Map;
 
 public class EventController {
 
-        private static final Logger logger = Logger.getLogger(MapApplication.class.getName());
+        //private static final Logger logger = Logger.getLogger(MapApplication.class.getName());
         private final MapApplicationClient client;
-        int port;
 
         public EventController(@Value("${jmap.backend.target}") String target) {
                 client = new MapApplicationClient(target);
@@ -37,7 +36,7 @@ public class EventController {
             @RequestParam(value = "skip", defaultValue = "0") int skip) {
                 if(bbox_br_x == 0 && bbox_br_y == 0 && bbox_tl_x == 0 && bbox_tl_y == 0 && point_x == 0 && point_y == 0)
                 {
-                        //errorhandling
+                        // errorhandling
                 }
                 double[] bbox_br = {bbox_br_x, bbox_br_y};
                 double[] point = {point_x, point_y};

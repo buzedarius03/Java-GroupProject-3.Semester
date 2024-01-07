@@ -40,8 +40,9 @@ public class MapServiceImpl extends MapServiceImplBase {
         GeoJsonWriter writer = new GeoJsonWriter();
 
         String geoJson = writer.write(geometry);
-        // replace "EPSG:4326" with "EPSG:0"? this ist just a test bc i dont know how what kind of model epsg:0 is??
-        // geoJson = geoJson.replace("EPSG:4326", "EPSG:0"); // disabled for now
+        // replace "EPSG:4326" with "EPSG:0"? 
+        // this ist not ok and just a test bc i dont know how what kind of model epsg:0 is?
+        geoJson = geoJson.replace("EPSG:4326", "EPSG:0");
 
         return geoJson;
     }
@@ -49,10 +50,10 @@ public class MapServiceImpl extends MapServiceImplBase {
     private EntitybyIdResponse getEntityResponsebyWay(OSMWay way, String entity_type) {
         String name = way.getTags().getOrDefault("name", "");
         String type = way.getTags().getOrDefault(entity_type, "");
-        logger.info("Found way with name " + name + " and type " + type);
         String geoJson = geometryToGeoJson(way.getGeometry());
         long[] node_ids = way.getChild_ids();
         long id = way.getId();
+        logger.info("Found way with name " + name + " and type " + type);
 
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
             .setName(name)
@@ -72,6 +73,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         String geoJson = geometryToGeoJson(relation.getGeometry());
         long [] child_ids = relation.getChild_ids();
         long id = relation.getId();
+        logger.info("Found relation with name " + name + " and type " + type);
 
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
                 .setName(name)
@@ -90,6 +92,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         String type = node.getTags().getOrDefault(entity_type, "");
         String geoJson = geometryToGeoJson(node.getGeometry());
         long id = node.getId();
+        logger.info("Found node with name " + name + " and type " + type);
 
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
@@ -121,8 +124,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             bbox_geom = JTS.transform(bbox, transform);
             point_geom_transformed = JTS.transform(point_geom, transform);
         } catch (Exception e) {
-            logger.info("Error transforming bbox or point to EPSG:31256");
-            logger.info(e.toString());
+            logger.warning("Error transforming bbox or point to EPSG:31256" + e.toString());
         }
 
         for (OSMNode node : osmData.getNodesMap().values()) {
@@ -136,8 +138,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                         response_list.add(getEntityResponsebyNode(node, entity_type));
                     }
                 } catch (Exception e) {
-                    logger.info("Error transforming node to EPSG:31256");
-                    logger.info(e.toString());
+                    logger.warning("Error transforming node to EPSG:31256" + e.toString());
                 }    
             }
         }
@@ -152,8 +153,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                         response_list.add(getEntityResponsebyWay(way, entity_type));
                     }
                 } catch (Exception e) {
-                    logger.info("Error transforming way to EPSG:31256");
-                    logger.info(e.toString());
+                    logger.warning("Error transforming way to EPSG:31256" + e.toString());
                 }   
             }
         }
@@ -168,8 +168,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                         response_list.add(getEntityResponsebyRelation(relation, entity_type));
                     }
                 } catch (Exception e) {
-                    logger.info("Error transforming relation to EPSG:31256");
-                    logger.info(e.toString());
+                    logger.warning("Error transforming relation to EPSG:31256" + e.toString());
                 } 
             }
         }
@@ -204,7 +203,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             response = getEntityResponsebyRelation(relation, req_type);
         }
         else{
-            logger.info("No entity found with id " + roadid);
+            logger.info("No entity found with ID " + roadid);
             response = EntitybyIdResponse.newBuilder().build();
         }
               

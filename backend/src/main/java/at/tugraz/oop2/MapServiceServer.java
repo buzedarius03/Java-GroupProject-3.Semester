@@ -8,6 +8,11 @@ import io.grpc.ServerBuilder;
 
 public class MapServiceServer {
     private static final Logger logger = Logger.getLogger(MapServiceServer.class.getName());
+    
+    //configure logger to log without the date (only for local testing may interfere with the testsysem!)
+    static {
+        //System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%n");
+    }
 
     private Server server;
     private static OSMData data;
