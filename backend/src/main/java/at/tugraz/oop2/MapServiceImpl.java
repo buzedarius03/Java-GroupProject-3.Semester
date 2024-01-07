@@ -42,7 +42,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         String geoJson = writer.write(geometry);
         // replace "EPSG:4326" with "EPSG:0"? 
         // this ist not ok and just a test bc i dont know how what kind of model epsg:0 is?
-        geoJson = geoJson.replace("EPSG:4326", "EPSG:0");
+       // geoJson = geoJson.replace("EPSG:4326", "EPSG:0");
 
         return geoJson;
     }

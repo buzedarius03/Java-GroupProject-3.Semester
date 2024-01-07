@@ -63,6 +63,11 @@ public class MapServiceServer {
             MapLogger.backendLoadFinished(data.getNodesMap().size(), data.getWaysMap().size(), data.getRelationsMap().size());
         }
         
+        // create a MapTileRenderer object and render a tile
+        OSMTileRenderer renderer = new OSMTileRenderer(data);
+        //renderer.renderTile(0, 0, 0, "motorway,trunk,primary,secondary,road,forest,residential,vineyard,grass,railway,water", "tile.png");
+        //renderer.renderTile(8894, 5757, 14, "motorway,trunk,primary,secondary,road,forest,residential,vineyard,grass,railway,water", "tile3.png");
+
         
         // start the backend after parsing
         MapServiceServer server = new MapServiceServer();
