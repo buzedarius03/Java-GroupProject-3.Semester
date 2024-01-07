@@ -55,8 +55,18 @@ message EntityResponse {
     repeated EntitybyIdResponse entity = 1;
 }
 
+message UsageRequest {
+    string usage = 1;
+    Bbox bbox = 2;
+}
+
+message UsageResponse {
+    string usageInfo = 1;
+}
+
 service MapService {
     rpc GetEntitybyId(EntitybyIdRequest) returns (EntitybyIdResponse);
     rpc GetAmenity(AmenityRequest) returns (EntityResponse);
     rpc GetRoad(RoadRequest) returns (EntityResponse);
+    rpc GetUsage(UsageRequest) returns (UsageResponse);
 }

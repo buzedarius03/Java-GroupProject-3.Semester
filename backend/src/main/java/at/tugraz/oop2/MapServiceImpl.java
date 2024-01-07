@@ -6,6 +6,8 @@ import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
 import at.tugraz.oop2.Mapservice.RoadRequest;
+import at.tugraz.oop2.Mapservice.UsageRequest;
+import at.tugraz.oop2.Mapservice.UsageResponse;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.EntityResponse;
 
@@ -15,7 +17,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import java.util.logging.Logger;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -175,6 +176,16 @@ public class MapServiceImpl extends MapServiceImplBase {
         EntityResponse response = EntityResponse.newBuilder().addAllEntity(response_list).build();
         return response;
     }
+
+    private UsageResponse getUsageStats(String usage, Coordinate tl_coord, Coordinate br_coord) {
+        long nodes = osmData.getNodesMap().size();
+        long ways = osmData.getWaysMap().size();
+        long relations = osmData.getRelationsMap().size();
+
+
+        UsageResponse response = UsageResponse.newBuilder().setUsageInfo("Nodes: " + nodes + " Ways: " + ways + " Relations: " + relations).build();
+        return response;
+    }
     
     @Override
     public void getEntitybyId(EntitybyIdRequest request, StreamObserver<EntitybyIdResponse> responseObserver) {
@@ -237,6 +248,20 @@ public class MapServiceImpl extends MapServiceImplBase {
         Coordinate br_coord = new Coordinate(br[0], br[1]);
 
         EntityResponse response = getEntityResponse(tl_coord, br_coord, point, 0, "highway", road);
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getUsage(UsageRequest request, StreamObserver<UsageResponse> responseObserver) {
+        String usage = request.getUsage();
+        double[] tl = {request.getBbox().getTlX(), request.getBbox().getTlY()};
+        double[] br = {request.getBbox().getBrX(), request.getBbox().getBrY()};
+        Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
+        Coordinate br_coord = new Coordinate(br[0], br[1]);
+
+        UsageResponse response = getUsageStats(usage, tl_coord, br_coord);
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();

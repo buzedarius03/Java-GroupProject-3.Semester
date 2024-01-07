@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.logging.Logger;
@@ -16,7 +15,7 @@ import java.util.Map;
 
 public class EventController {
 
-        //private static final Logger logger = Logger.getLogger(MapApplication.class.getName());
+        private static final Logger logger = Logger.getLogger(MapApplication.class.getName());
         private final MapApplicationClient client;
 
         public EventController(@Value("${jmap.backend.target}") String target) {
@@ -88,4 +87,26 @@ public class EventController {
     public Object getRoads_byID(@PathVariable("id") long id) {
             return client.getRoadbyId(id);
     }
+
+    // Tile rendering is still WIP
+    @GetMapping("/tiles/{z}/{x}/{y}")
+        public byte[] getTile(@PathVariable("z") int z, @PathVariable("x") int x, @PathVariable("y") int y,
+                @RequestParam(value = "layers", defaultValue = " ") String layers) {
+                        byte[] tile = client.getTile(z, x, y, layers);
+                        return tile;
+        }
+
+    @GetMapping("/usage")
+        public Map<String, Object> getUsage(@RequestParam(value = "usage", defaultValue = " ") String usage,
+                @RequestParam(value = "bbox.tl.x", defaultValue = "0.0") double bbox_tl_x,
+                @RequestParam(value = "bbox.tl.y", defaultValue = "0.0") double bbox_tl_y,
+                @RequestParam(value = "bbox.br.x", defaultValue = "0.0") double bbox_br_x,
+                @RequestParam(value = "bbox.br.y", defaultValue = "0.0") double bbox_br_y) {
+                        double[] bbox_br = {bbox_br_x, bbox_br_y};
+                        double[] bbox_tl = {bbox_tl_x, bbox_tl_y};
+                String landusages = client.getUsageInfo(usage, bbox_tl, bbox_br);
+                
+                return Map.of(
+                        "entries", landusages);
+        }
 }

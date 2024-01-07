@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
+import at.tugraz.oop2.Mapservice.UsageRequest;
 import at.tugraz.oop2.Mapservice.Bbox;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.PointReq;
@@ -90,6 +91,19 @@ public class MapApplicationClient {
         String geom_json = stub.getEntitybyId(request).getGeom();
 
         return new Road(name, id, tags, type, child_ids, geom_json);
+    }
+
+    public String getUsageInfo(String usage, double[] bbox_tl, double[] bbox_br) {
+        UsageRequest request = UsageRequest.newBuilder().setUsage(usage).setBbox(Bbox.newBuilder().setTlX(bbox_tl[0]).setTlY(bbox_tl[1])
+        .setBrX(bbox_br[0]).setBrY(bbox_br[1]).build()).build();
+        
+        String usage_info = stub.getUsage(request).getUsageInfo();
+        
+        return usage_info;
+    }
+
+    public byte[] getTile(int z, int x, int y, String layers) {
+        return null;
     }
 
 }
