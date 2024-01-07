@@ -18,7 +18,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import java.util.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
