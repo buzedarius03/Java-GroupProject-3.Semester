@@ -14,7 +14,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.util.logging.Logger;
-
+import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -42,6 +42,7 @@ public class EventController {
             @RequestParam(value = "skip", defaultValue = "0") int skip) {
         try {
             if (bbox_br_x == 0 && bbox_br_y == 0 && bbox_tl_x == 0 && bbox_tl_y == 0 && point_x == 0 && point_y == 0) {
+                // the checks have to be more specific!
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "no / invalid parameters given");
             }
             double[] bbox_br = { bbox_br_x, bbox_br_y };
@@ -68,6 +69,9 @@ public class EventController {
 
         catch (ResponseStatusException e) {
             return new ResponseEntity<String>(e.getReason(), e.getStatusCode());
+        }
+        catch (Exception e) {
+            return new ResponseEntity<String>("Something else went wrong, maybe the Backend is unreachable?", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
