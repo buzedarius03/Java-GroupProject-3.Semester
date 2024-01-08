@@ -43,44 +43,42 @@ public class EventController {
             @RequestParam(value = "take", defaultValue = "50") int take,
             @RequestParam(value = "skip", defaultValue = "0") int skip) {
         try{
-                // point or bbox parameter cant be both 0 or both given
-                if(bbox_br_x == 0 && bbox_br_y == 0 && bbox_tl_x == 0 && bbox_tl_y == 0 && point_x == 0 && point_y == 0)
+                boolean isBbox = (bbox_br_x != 0 || bbox_br_y != 0 || bbox_tl_x != 0 || bbox_tl_y != 0);
+                boolean isPoint = (point_x != 0 || point_y != 0 || point_dist != 0);
+        
+                // point or bbox parameters can't be both 0 or both given
+                if (isBbox && isPoint) 
                 {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "false parameters");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "can either be box or point");
                 }
-                if(bbox_br_x != 0 && bbox_br_y != 0 && bbox_tl_x != 0 && bbox_tl_y != 0 && point_x != 0 && point_y != 0)
+
+                if (!isBbox && !isPoint) 
                 {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "false parameters");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "can either be box or point");
                 }
+        
                 // y parameters must be between -90.0 and 90.0
-                if(bbox_br_y > 90.0 || bbox_br_y < -90.0)
+                if (isBbox && (bbox_br_y > 90.0 || bbox_br_y < -90.0 || bbox_tl_y > 90.0 || bbox_tl_y < -90.0)) 
                 {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
                 }
-                if(bbox_tl_y > 90.0 || bbox_tl_y < -90.0)
+        
+                // x parameters must be between -180.0 and 180.0
+                if (isBbox && (bbox_br_x > 180.0 || bbox_br_x < -180.0 || bbox_tl_x > 180.0 || bbox_tl_x < -180.0)) 
                 {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
                 }
-                if(point_y > 90.0 || point_y < -90.0)
+        
+                // point_y parameter must be between -90.0 and 90.0
+                if (isPoint && (point_y > 90.0 || point_y < -90.0)) 
                 {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");  
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
                 }
-                if(point_dist < 0)
+        
+                // point_x parameter must be between -180.0 and 180.0
+                if (isPoint && (point_x > 180.0 || point_x < -180.0)) 
                 {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "false parameters");
-                }
-                // x parameters must be betwen -180.0 and 180.0
-                if(bbox_br_x > 180.0 || bbox_br_x < -180.0)
-                {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
-                }
-                if(bbox_tl_x > 180.0 || bbox_tl_x < -180.0)
-                {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
-                }
-                if(point_x > 180.0 || point_x < -180.0)
-                {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");  
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
                 }
                 double[] bbox_br = { bbox_br_x, bbox_br_y };
                 double[] point = { point_x, point_y };
