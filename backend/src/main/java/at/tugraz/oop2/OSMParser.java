@@ -139,9 +139,12 @@ public class OSMParser {
             if (!(relationNode instanceof Element)) {
                 continue;
             }
-
             Element relationElement = (Element) relationNode;
             long relationId = Long.parseLong(relationElement.getAttribute("id"));
+            if(relationId == 67291)
+            {
+                logger.info("Relation 67291");
+            }
             Map<String, String> tags = parseTags(relationElement);
 
             // Handle multipolygon and building (we assume building outlines can also be treated as multipolygons)

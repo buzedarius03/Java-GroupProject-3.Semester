@@ -87,9 +87,11 @@ public class MapServiceImpl extends MapServiceImplBase {
                 .setType(type)
                 .setId(id)
                 .setGeom(geoJson)
-                .putAllTags(relation.getTags())
-                .addAllChildIds(Arrays.asList(Arrays.stream(child_ids).boxed().toArray(Long[]::new)));
+                .putAllTags(relation.getTags());
 
+        if (child_ids != null) {
+            response_Builder.addAllChildIds(Arrays.asList(Arrays.stream(child_ids).boxed().toArray(Long[]::new)));
+        }
         EntitybyIdResponse response = response_Builder.build();
         return response;
     }
@@ -114,8 +116,8 @@ public class MapServiceImpl extends MapServiceImplBase {
     private EntityResponse getEntityResponse(Coordinate tl_coord, Coordinate br_coord, double[] point,
             double point_dist, String entity_type, String type) {
         GeometryFactory geometryFactory = new GeometryFactory();
-        Geometry bbox = geometryFactory.createPolygon(new Coordinate[] { tl_coord, br_coord,
-                new Coordinate(br_coord.getX(), tl_coord.getY()), new Coordinate(tl_coord.getX(), br_coord.getY()),
+        Geometry bbox = geometryFactory.createPolygon(new Coordinate[] { tl_coord,
+                new Coordinate(br_coord.getX(), tl_coord.getY()), br_coord, new Coordinate(tl_coord.getX(), br_coord.getY()),
                 tl_coord });
         Geometry point_geom = geometryFactory.createPoint(new Coordinate(point[0], point[1]));
         List<EntitybyIdResponse> response_list = new ArrayList<EntitybyIdResponse>();
@@ -136,12 +138,18 @@ public class MapServiceImpl extends MapServiceImplBase {
         }
 
         for (OSMNode node : osmData.getNodesMap().values()) {
+            if(node.getId() == 67291)
+            {
+                logger.info("node: " + node.getTags().get(entity_type));
+                logger.info("type: " + type);
+            }
             if (node.getTags().get(entity_type) != null
                     && (node.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 Geometry node_geom = node.getGeometry();
                 try {
                     node_geom = JTS.transform(node_geom, transform);
-                    if ((point_dist == 0.0 && bbox_geom.contains(node_geom)) || (point_dist == 0.0 && bbox_geom.intersects(node_geom) || (point_dist != 0.0 && node_geom.distance(point_geom_transformed) <= point_dist))) {
+                    if ((point_dist == 0.0 && bbox_geom.contains(node_geom)) || (point_dist == 0.0 && bbox_geom.intersects(node_geom)
+                     || (point_dist != 0.0 && node_geom.distance(point_geom_transformed) <= point_dist))) {
                         response_list.add(getEntityResponsebyNode(node, entity_type));
                     }
                 } catch (Exception e) {
@@ -150,12 +158,18 @@ public class MapServiceImpl extends MapServiceImplBase {
             }
         }
         for (OSMWay way : osmData.getWaysMap().values()) {
+            if(way.getId() == 67291)
+            {
+                logger.info("way: " + way.getTags().get(entity_type));
+                logger.info("type: " + type);
+            }
             if (way.getTags().get(entity_type) != null
                     && (way.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 Geometry way_geom = way.getGeometry();
                 try {
                     way_geom = JTS.transform(way_geom, transform);
-                    if ((point_dist == 0.0 && bbox_geom.contains(way_geom)) || (point_dist == 0.0 && bbox_geom.intersects(way_geom) || (point_dist != 0.0 && way_geom.distance(point_geom_transformed) <= point_dist))) {
+                    if ((point_dist == 0.0 && bbox_geom.contains(way_geom)) || (point_dist == 0.0 && bbox_geom.intersects(way_geom) 
+                     || (point_dist != 0.0 && way_geom.distance(point_geom_transformed) <= point_dist))) {
                         response_list.add(getEntityResponsebyWay(way, entity_type));
                     }
                 } catch (Exception e) {
@@ -167,9 +181,21 @@ public class MapServiceImpl extends MapServiceImplBase {
             if (relation.getTags().get(entity_type) != null
                     && (relation.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 Geometry relation_geom = relation.getGeometry();
+                if(relation.getId() == 67291)
+                {
+                    logger.info("relation: " + relation.getTags().get(entity_type));
+                    logger.info("type: " + type);
+                }
+                if(relation_geom.isEmpty())
+                {
+                    logger.info("relation not valid");
+                }
+                boolean contains = bbox_geom.contains(relation_geom);
+                boolean intersects = bbox_geom.intersects(relation_geom);
                 try {
                     relation_geom = JTS.transform(relation_geom, transform);
-                    if ((point_dist == 0.0 && bbox_geom.contains(relation_geom)) || (point_dist == 0.0 && bbox_geom.intersects(relation_geom)) ||  (point_dist != 0.0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
+                    if ((point_dist == 0.0 && bbox_geom.contains(relation_geom)) || (point_dist == 0.0 && bbox_geom.intersects(relation_geom))
+                     ||  (point_dist != 0.0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
                         response_list.add(getEntityResponsebyRelation(relation, entity_type));
                     }
                 } catch (Exception e) {
