@@ -178,7 +178,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             }
         }
         for (OSMRelation relation : osmData.getRelationsMap().values()) {
-            if(relation.getId() == 67291)
+            if(relation.getId() == 476)
             {
                 logger.info("relation: " + relation.getTags().get(entity_type));
                 logger.info("type: " + type);
@@ -197,6 +197,9 @@ public class MapServiceImpl extends MapServiceImplBase {
                 }
                 boolean contains = bbox_geom.contains(relation_geom);
                 boolean intersects = bbox_geom.intersects(relation_geom);
+                Coordinate[] distance = relation_geom.getCoordinates();
+                Coordinate[] distance2 = bbox_geom.getCoordinates();
+                double dist = relation_geom.distance(bbox_geom);
                 try {
                     relation_geom = JTS.transform(relation_geom, transform);
                     if ((point_dist == 0.0 && bbox_geom.contains(relation_geom)) || (point_dist == 0.0 && bbox_geom.intersects(relation_geom))
