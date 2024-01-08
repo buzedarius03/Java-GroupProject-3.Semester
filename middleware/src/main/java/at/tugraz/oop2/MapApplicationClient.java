@@ -96,7 +96,10 @@ public class MapApplicationClient {
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         long[] child_ids = stub.getEntitybyId(request).getChildIdsList().stream().mapToLong(i -> i).toArray();
         String geom_json = stub.getEntitybyId(request).getGeom();
-
+        if(name == null && type == null)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "road not found");
+        }
         return new Road(name, id, tags, type, child_ids, geom_json);
     }
 

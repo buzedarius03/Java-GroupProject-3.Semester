@@ -168,6 +168,10 @@ public class EventController {
                 // Not sure about the next three lines!!!!
                 Road[] roads_taked = Arrays.copyOfRange(roads, skip, Math.min(take + skip, roads.length));
                 int total = roads.length;
+                if(roads.length == 0)
+                {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no roads found");
+                }
                 return new ResponseEntity<Map<String, Object>>(Map.of(
                                 "entries", roads_taked,
                                 "paging", Map.of(
@@ -176,10 +180,14 @@ public class EventController {
                                         "total", total)),
                                 HttpStatus.OK);
         }
-        
-        catch(Exception e)
+        catch(ResponseStatusException e)
         {
-                return new ResponseEntity<>(Map.of("internal error", "backend problem"), HttpStatus.INTERNAL_SERVER_ERROR);
+                Error_Response error_response = new Error_Response(e.getReason());
+                return new ResponseEntity<Object>(error_response, e.getStatusCode());
+        }
+        catch(Exception e)
+        {       Error_Response error_response = new Error_Response("internal server error");
+                return new ResponseEntity<Object>( error_response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -187,11 +195,13 @@ public class EventController {
     public Object getRoads_byID(@PathVariable("id") long id) {
         try
         {
-            return client.getRoadbyId(id);
+                Road road = client.getRoadbyId(id);
+                return road;
         }
-        catch(ResponseStatusException e)
+          catch(ResponseStatusException e)
         {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "false parameters");
+                Error_Response error_response = new Error_Response(e.getReason());
+                return new ResponseEntity<Object>(error_response, e.getStatusCode());
         }
     }
 
