@@ -102,13 +102,13 @@ public class EventController {
                         HttpStatus.OK);
 
         }
-        catch(ResponseStatusException e)
+        /*catch(ResponseStatusException e)
         {
                 return new ResponseEntity<String>(e.getReason(), e.getStatusCode());
-        }
+        }*/
         catch(Exception e)
         {
-                return new ResponseEntity<String>("backend problem", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(Map.of("internal error", "backend problem"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -165,13 +165,10 @@ public class EventController {
                                         "total", total)),
                                 HttpStatus.OK);
         }
-        catch(ResponseStatusException e)
-        {
-                return new ResponseEntity<String>(e.getReason(), e.getStatusCode());
-        }
+        
         catch(Exception e)
         {
-                return new ResponseEntity<String>("backend problem", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(Map.of("internal error", "backend problem"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
