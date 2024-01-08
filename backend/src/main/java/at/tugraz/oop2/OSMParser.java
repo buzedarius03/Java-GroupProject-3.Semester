@@ -196,11 +196,6 @@ public class OSMParser {
                                     innerPolygons.add(polygon);
                                 }
                             }
-                            else
-                            {
-                                logger.warning("Relation " + relationId + " references a way that is not a polygon.");
-                                continue;
-                            }
 
                             // Mark the way as referenced
                             way.setReferenced(true);
