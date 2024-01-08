@@ -186,4 +186,32 @@ public class EventController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "false parameters");
         }
     }
+
+    // Tile rendering is still WIP
+    @GetMapping("/tiles/{z}/{x}/{y}")
+    public byte[] getTile(@PathVariable("z") int z, @PathVariable("x") int x, @PathVariable("y") int y,
+            @RequestParam(value = "layers", defaultValue = " ") String layers) {
+        byte[] tile = client.getTile(z, x, y, layers);
+        return tile;
+    }
+
+    @GetMapping("/usage")
+    public Map<String, Object> getUsage(@RequestParam(value = "usage", defaultValue = " ") String usage,
+            @RequestParam(value = "bbox.tl.x", defaultValue = "0.0") double bbox_tl_x,
+            @RequestParam(value = "bbox.tl.y", defaultValue = "0.0") double bbox_tl_y,
+            @RequestParam(value = "bbox.br.x", defaultValue = "0.0") double bbox_br_x,
+            @RequestParam(value = "bbox.br.y", defaultValue = "0.0") double bbox_br_y) {
+                double[] bbox_br = { bbox_br_x, bbox_br_y };
+                double[] bbox_tl = { bbox_tl_x, bbox_tl_y };
+                String landusages = client.getUsageInfo(usage, bbox_tl, bbox_br);
+
+                JSONParser parser = new JSONParser();
+                JSONObject json = null;
+                try {
+                json = (JSONObject) parser.parse(landusages);
+                } catch (ParseException e) {
+                e.printStackTrace();
+                }
+                return json;
+        }
 }
