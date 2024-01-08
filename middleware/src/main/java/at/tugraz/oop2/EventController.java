@@ -122,9 +122,13 @@ public class EventController {
     }
 
     @GetMapping("/amenities/{id}")
-    public ResponseEntity<?> getAmenities_byID(@PathVariable("id") long id) {
+    public ResponseEntity<?> getAmenities_byID(@PathVariable("id") Long id) {
         try
         {
+                if(id == null || id <= 0)
+                {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid id");
+                }
                 Amenity amenity = client.getAmenitybyId(id);
                 return new ResponseEntity<Object>(amenity, HttpStatus.OK);
         }
@@ -192,9 +196,13 @@ public class EventController {
     }
 
     @GetMapping("/roads/{id}")
-    public Object getRoads_byID(@PathVariable("id") long id) {
+    public Object getRoads_byID(@PathVariable("id") Long id) {
         try
         {
+                if(id == null || id <= 0)
+                {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid id");
+                }
                 Road road = client.getRoadbyId(id);
                 return road;
         }
