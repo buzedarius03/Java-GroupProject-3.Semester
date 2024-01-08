@@ -63,6 +63,7 @@ public class OSMParser {
             Map<Long, Boolean> referencedNodes) {
         NodeList wayList = document.getElementsByTagName("way");
         int numWays = wayList.getLength();
+        int u = 0;
         logger.info("Parsing " + numWays + " ways.");
 
         for (int i = 0; i < numWays; i++) {
@@ -107,6 +108,10 @@ public class OSMParser {
                         // Open way or too few points to make a Polygon -> It's a LineString
                         wayGeometry = geometryFactory.createLineString(coordsArray);
                     }
+                    if(!wayGeometry.isValid())
+                    {
+                        u+=1;
+                    }
                     OSMWay way = new OSMWay(wayId, wayGeometry, parseTags(wayElement), child_ids);
                     waysMap.put(wayId, way);
                 } else {
@@ -123,7 +128,8 @@ public class OSMParser {
     private void parseRelations(Document document, Map<Long, OSMNode> nodesMap, Map<Long, OSMWay> waysMap,
             Map<Long, OSMRelation> relationsMap, Map<Long, Boolean> referencedNodes,
             Map<Long, Boolean> referencedWays) {
-
+        int u = 0;
+        int x = 0;
         NodeList relationList = document.getElementsByTagName("relation");
         int numRelations = relationList.getLength();
         logger.info("Parsing " + numRelations + " relations.");
@@ -167,12 +173,19 @@ public class OSMParser {
                             Geometry wayGeometry = way.getGeometry();
                             if (wayGeometry instanceof LineString) {
                                 LineString lineString = (LineString) wayGeometry;
+                                if(lineString.isClosed())
+                                {
                                 Polygon polygon = createPolygonFromLineString(lineString, waysMap, nodesMap);
+                                if(!polygon.isValid())
+                                {
+                                    x+=1;
+                                }
 
                                 if ("outer".equals(role)) {
                                     outerPolygons.add(polygon);
                                 } else if ("inner".equals(role)) {
                                     innerPolygons.add(polygon);
+                                }
                                 }
                             }
 
@@ -183,10 +196,16 @@ public class OSMParser {
                     }
 
                     // Build the Multipolygon
+
                     GeometryCollection geometryCollection = buildMultipolygonGeometry(outerPolygons, innerPolygons);
 
                     OSMRelation relation = new OSMRelation(relationId, geometryCollection, tags, null);
                     relationsMap.put(relationId, relation);
+                    if(!relation.getGeometry().isValid())
+                    {
+                        logger.warning("Relation with geometry" + relation.getGeometry().toString() + " is not valid");
+                        u+=1;
+                    }
                 } catch (Exception e) {
                     logger.warning("Failed to parse relation ID " + relationId + ": " + e.getMessage());
                 }
