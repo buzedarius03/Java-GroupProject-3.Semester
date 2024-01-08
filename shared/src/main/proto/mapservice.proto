@@ -18,7 +18,7 @@ message Bbox {
 message PointReq {
     double x = 1;
     double y = 2;
-    int64 dist = 3;
+    double dist = 3;
 }
 
 message EntitybyIdRequest {

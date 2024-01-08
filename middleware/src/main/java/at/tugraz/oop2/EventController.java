@@ -35,7 +35,7 @@ public class EventController {
     public ResponseEntity<?> getAmenity(@RequestParam(value = "amenity", defaultValue = " ") String amenity,
             @RequestParam(value = "point.x", defaultValue = "0.0") double point_x,
             @RequestParam(value = "point.y", defaultValue = "0.0") double point_y,
-            @RequestParam(value = "point.d", defaultValue = "0") long point_dist,
+            @RequestParam(value = "point.d", defaultValue = "0") double point_dist,
             @RequestParam(value = "bbox.tl.x", defaultValue = "0.0") double bbox_tl_x,
             @RequestParam(value = "bbox.tl.y", defaultValue = "0.0") double bbox_tl_y,
             @RequestParam(value = "bbox.br.x", defaultValue = "0.0") double bbox_br_x,
@@ -90,7 +90,7 @@ public class EventController {
                 }
                 double[] bbox_br = { bbox_br_x, bbox_br_y };
                 double[] point = { point_x, point_y };
-                if (point_dist == 0) {
+                if (point_dist == 0.0) {
                         point[0] = bbox_tl_x;
                         point[1] = bbox_tl_y;
                 }

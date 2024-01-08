@@ -176,10 +176,6 @@ public class OSMParser {
                                 if(lineString.isClosed())
                                 {
                                 Polygon polygon = createPolygonFromLineString(lineString, waysMap, nodesMap);
-                                if(!polygon.isValid())
-                                {
-                                    x+=1;
-                                }
 
                                 if ("outer".equals(role)) {
                                     outerPolygons.add(polygon);
@@ -201,11 +197,6 @@ public class OSMParser {
 
                     OSMRelation relation = new OSMRelation(relationId, geometryCollection, tags, null);
                     relationsMap.put(relationId, relation);
-                    if(!relation.getGeometry().isValid())
-                    {
-                        logger.warning("Relation with geometry" + relation.getGeometry().toString() + " is not valid");
-                        u+=1;
-                    }
                 } catch (Exception e) {
                     logger.warning("Failed to parse relation ID " + relationId + ": " + e.getMessage());
                 }

@@ -27,7 +27,7 @@ public class MapApplicationClient {
         logger.info("MapApplicationClient: Connecting to Backend " + target);
     }
 
-    public Amenity[] getAmenity(String amenity, double[] point, double[] second_edge_point, long dist) {
+    public Amenity[] getAmenity(String amenity, double[] point, double[] second_edge_point, double dist) {
         //If dist == 0, we use bbox, otherwise we use points
         //if amenity == "", we use all amenities
         AmenityRequest request;

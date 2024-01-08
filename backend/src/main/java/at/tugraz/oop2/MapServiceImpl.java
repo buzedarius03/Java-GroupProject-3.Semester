@@ -112,7 +112,7 @@ public class MapServiceImpl extends MapServiceImplBase {
     }
 
     private EntityResponse getEntityResponse(Coordinate tl_coord, Coordinate br_coord, double[] point,
-            long point_dist, String entity_type, String type) {
+            double point_dist, String entity_type, String type) {
         GeometryFactory geometryFactory = new GeometryFactory();
         Geometry bbox = geometryFactory.createPolygon(new Coordinate[] { tl_coord, br_coord,
                 new Coordinate(br_coord.getX(), tl_coord.getY()), new Coordinate(tl_coord.getX(), br_coord.getY()),
@@ -141,7 +141,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry node_geom = node.getGeometry();
                 try {
                     node_geom = JTS.transform(node_geom, transform);
-                    if ((point_dist == 0 && bbox_geom.contains(node_geom)) || (point_dist == 0 && bbox_geom.intersects(node_geom) || (point_dist != 0 && node_geom.distance(point_geom_transformed) <= point_dist))) {
+                    if ((point_dist == 0.0 && bbox_geom.contains(node_geom)) || (point_dist == 0.0 && bbox_geom.intersects(node_geom) || (point_dist != 0.0 && node_geom.distance(point_geom_transformed) <= point_dist))) {
                         response_list.add(getEntityResponsebyNode(node, entity_type));
                     }
                 } catch (Exception e) {
@@ -155,7 +155,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry way_geom = way.getGeometry();
                 try {
                     way_geom = JTS.transform(way_geom, transform);
-                    if ((point_dist == 0 && bbox_geom.contains(way_geom)) || (point_dist == 0 && bbox_geom.intersects(way_geom) || (point_dist != 0 && way_geom.distance(point_geom_transformed) <= point_dist))) {
+                    if ((point_dist == 0.0 && bbox_geom.contains(way_geom)) || (point_dist == 0.0 && bbox_geom.intersects(way_geom) || (point_dist != 0.0 && way_geom.distance(point_geom_transformed) <= point_dist))) {
                         response_list.add(getEntityResponsebyWay(way, entity_type));
                     }
                 } catch (Exception e) {
@@ -169,7 +169,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry relation_geom = relation.getGeometry();
                 try {
                     relation_geom = JTS.transform(relation_geom, transform);
-                    if ((point_dist == 0 && bbox_geom.contains(relation_geom)) || (point_dist == 0 && bbox_geom.intersects(relation_geom)) ||  (point_dist != 0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
+                    if ((point_dist == 0.0 && bbox_geom.contains(relation_geom)) || (point_dist == 0.0 && bbox_geom.intersects(relation_geom)) ||  (point_dist != 0.0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
                         response_list.add(getEntityResponsebyRelation(relation, entity_type));
                     }
                 } catch (Exception e) {
@@ -296,7 +296,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             double[] tl = { request.getBbox().getTlX(), request.getBbox().getTlY() };
             double[] br = { request.getBbox().getBrX(), request.getBbox().getBrY() };
             double[] point = { request.getPoint().getX(), request.getPoint().getY() };
-            long point_dist = request.getPoint().getDist();
+            double point_dist = request.getPoint().getDist();
             Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
             Coordinate br_coord = new Coordinate(br[0], br[1]);
             EntityResponse response = getEntityResponse(tl_coord, br_coord, point, point_dist, "amenity", amenity);
