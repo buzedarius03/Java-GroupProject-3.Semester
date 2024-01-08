@@ -30,6 +30,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 public class MapServiceImpl extends MapServiceImplBase {
 
@@ -262,7 +264,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             node = osmData.getNodesMap().get(roadid);
             relation = osmData.getRelationsMap().get(roadid);
         } catch (Exception e) {
-            // this is fine, we just didn't one of the types
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "didn't find entity by ID");
         }
 
         EntitybyIdResponse response;
@@ -283,22 +285,30 @@ public class MapServiceImpl extends MapServiceImplBase {
 
     @Override
     public void getAmenity(AmenityRequest request, StreamObserver<EntityResponse> responseObserver) {
-        String amenity = request.getType();
-        double[] tl = { request.getBbox().getTlX(), request.getBbox().getTlY() };
-        double[] br = { request.getBbox().getBrX(), request.getBbox().getBrY() };
-        double[] point = { request.getPoint().getX(), request.getPoint().getY() };
-        long point_dist = request.getPoint().getDist();
-        Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
-        Coordinate br_coord = new Coordinate(br[0], br[1]);
+        try
+        {
+            String amenity = request.getType();
+            double[] tl = { request.getBbox().getTlX(), request.getBbox().getTlY() };
+            double[] br = { request.getBbox().getBrX(), request.getBbox().getBrY() };
+            double[] point = { request.getPoint().getX(), request.getPoint().getY() };
+            long point_dist = request.getPoint().getDist();
+            Coordinate tl_coord = new Coordinate(tl[0], tl[1]);
+            Coordinate br_coord = new Coordinate(br[0], br[1]);
+            EntityResponse response = getEntityResponse(tl_coord, br_coord, point, point_dist, "amenity", amenity);
 
-        EntityResponse response = getEntityResponse(tl_coord, br_coord, point, point_dist, "amenity", amenity);
-
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+        catch(ResponseStatusException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could't find amenity");
+        }
+        
     }
 
     @Override
     public void getRoad(RoadRequest request, StreamObserver<EntityResponse> responseObserver) {
+        try{
         String road = request.getType();
         double[] tl = { request.getBbox().getTlX(), request.getBbox().getTlY() };
         double[] br = { request.getBbox().getBrX(), request.getBbox().getBrY() };
@@ -310,6 +320,11 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+        }
+        catch(ResponseStatusException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find road");
+        }
     }
 
     @Override
