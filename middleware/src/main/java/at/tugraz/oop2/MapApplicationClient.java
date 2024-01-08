@@ -4,6 +4,9 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.UsageRequest;
@@ -59,6 +62,10 @@ public class MapApplicationClient {
         String type = stub.getEntitybyId(request).getType();
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         String geom_json = stub.getEntitybyId(request).getGeom();
+        if(name == null && type == null)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Amenity not found");
+        }
         return new Amenity(name, id, tags, type, geom_json);
     }
 

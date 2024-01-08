@@ -116,20 +116,22 @@ public class EventController {
                 return new ResponseEntity<Object>(error_response, e.getStatusCode());
         }
         catch(Exception e)
-        {
-                return new ResponseEntity<>(Map.of("internal error", "backend problem"), HttpStatus.INTERNAL_SERVER_ERROR);
+        {       Error_Response error_response = new Error_Response("internal server error");
+                return new ResponseEntity<Object>( error_response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/amenities/{id}")
-    public Amenity getAmenities_byID(@PathVariable("id") long id) {
+    public ResponseEntity<?> getAmenities_byID(@PathVariable("id") long id) {
         try
         {
-            return client.getAmenitybyId(id);
+                Amenity amenity = client.getAmenitybyId(id);
+                return new ResponseEntity<Object>(amenity, HttpStatus.OK);
         }
         catch(ResponseStatusException e)
         {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "false parameters");
+                Error_Response error_response = new Error_Response(e.getReason());
+                return new ResponseEntity<Object>(error_response, e.getStatusCode());
         }
     }
 
