@@ -113,7 +113,7 @@ public class EventController {
         catch(ResponseStatusException e)
         {
                 Error_Response error_response = new Error_Response(e.getReason());
-                return new ResponseEntity<>(error_response.getErrorMessageToJSON(), e.getStatusCode());
+                return new ResponseEntity<Object>(error_response, e.getStatusCode());
         }
         catch(Exception e)
         {
