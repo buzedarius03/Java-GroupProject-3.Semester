@@ -38,7 +38,7 @@ public class MapApplicationClient {
             request = AmenityRequest.newBuilder().setType(amenity).setBbox(Bbox.newBuilder().setTlX(point[0]).setTlY(point[1])
             .setBrX(second_edge_point[0]).setBrY(second_edge_point[1]).build()).build();
         }
-
+        
         Amenity[] amenities = stub.getAmenity(request).getEntityList().stream().map(amenity1 -> {
             String name = amenity1.getName();
             long id = amenity1.getId();

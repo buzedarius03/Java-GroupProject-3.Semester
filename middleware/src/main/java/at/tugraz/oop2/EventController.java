@@ -110,10 +110,11 @@ public class EventController {
                         HttpStatus.OK);
 
         }
-        /*catch(ResponseStatusException e)
+        catch(ResponseStatusException e)
         {
-                return new ResponseEntity<String>(e.getReason(), e.getStatusCode());
-        }*/
+                Error_Response error_response = new Error_Response(e.getReason());
+                return new ResponseEntity<>(error_response.getErrorMessageToJSON(), e.getStatusCode());
+        }
         catch(Exception e)
         {
                 return new ResponseEntity<>(Map.of("internal error", "backend problem"), HttpStatus.INTERNAL_SERVER_ERROR);
