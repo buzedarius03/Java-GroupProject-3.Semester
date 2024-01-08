@@ -42,8 +42,7 @@ public class MapApplicationClient {
             .setBrX(second_edge_point[0]).setBrY(second_edge_point[1]).build()).build();
         }
         
-        Amenity[] amenities = stub.getAmenity(request).getEntityList().stream().filter(amenity1 -> amenity1.getName() != "").filter(amenity1 -> amenity1.getType() != "").
-        map(amenity1 -> {
+        Amenity[] amenities = stub.getAmenity(request).getEntityList().stream().map(amenity1 -> {
             String name = amenity1.getName();
             long id = amenity1.getId();
             String type = amenity1.getType();
@@ -76,8 +75,7 @@ public class MapApplicationClient {
 
         request = RoadRequest.newBuilder().setType(road).setBbox(Bbox.newBuilder().setTlX(point[0]).setTlY(point[1])
         .setBrX(second_edge_point[0]).setBrY(second_edge_point[1]).build()).build();
-        Road[] roads = stub.getRoad(request).getEntityList().stream().filter(road1 -> road1.getName() != "").filter(road1 -> road1.getType() != "").
-        map(road1 -> {
+        Road[] roads = stub.getRoad(request).getEntityList().stream().map(road1 -> {
             String name = road1.getName();
             long id = road1.getId();
             String type = road1.getType();
