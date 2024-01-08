@@ -204,14 +204,14 @@ public class MapServiceImpl extends MapServiceImplBase {
             String landuse = way.getTags().get("landuse");
             if (landuse != null && way.getGeometry() != null) {
                 Geometry geomTransformed = JTS.transform(way.getGeometry(), transform);
-                if (geomTransformed.contains(bboxTransformed)) {
+                if (bboxTransformed.contains(geomTransformed)) {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
                 }
-                /*if (geomTransformed.intersects(bboxTransformed)) {
+                if (geomTransformed.intersects(bboxTransformed)) {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
-                }*/
+                }
             }
         }
 
@@ -219,7 +219,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             String landuse = relation.getTags().get("landuse");
             if (landuse != null && relation.getGeometry() != null) {
                 Geometry geomTransformed = JTS.transform(relation.getGeometry(), transform);
-                if (geomTransformed.contains(bboxTransformed)) {
+                if (bboxTransformed.contains(geomTransformed)) {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
                 }
