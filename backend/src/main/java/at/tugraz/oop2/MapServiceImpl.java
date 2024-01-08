@@ -208,10 +208,10 @@ public class MapServiceImpl extends MapServiceImplBase {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
                 }
-                if (geomTransformed.intersects(bboxTransformed)) {
+                /*if (geomTransformed.intersects(bboxTransformed)) {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
-                }
+                }*/
             }
         }
 
@@ -223,10 +223,10 @@ public class MapServiceImpl extends MapServiceImplBase {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
                 }
-                if (geomTransformed.intersects(bboxTransformed)) {
+                /*if (geomTransformed.intersects(bboxTransformed)) {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
-                }
+                }*/
             }
         }
     } catch (Exception e) {
