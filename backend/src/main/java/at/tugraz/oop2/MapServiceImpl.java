@@ -102,7 +102,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         String geoJson = geometryToGeoJson(node.getGeometry());
         long id = node.getId();
         logger.info("Found node with name " + name + " and type " + type);
-
+        
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
