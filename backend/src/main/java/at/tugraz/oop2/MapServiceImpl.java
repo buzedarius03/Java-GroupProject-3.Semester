@@ -141,7 +141,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry node_geom = node.getGeometry();
                 try {
                     node_geom = JTS.transform(node_geom, transform);
-                    if ((point_dist == 0 && node_geom.intersects(bbox_geom)) ||
+                    if ((point_dist == 0 && node_geom.contains(bbox_geom)) ||
                             (point_dist != 0 && node_geom.distance(point_geom_transformed) <= point_dist)) {
                         response_list.add(getEntityResponsebyNode(node, entity_type));
                     }
@@ -156,7 +156,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry way_geom = way.getGeometry();
                 try {
                     way_geom = JTS.transform(way_geom, transform);
-                    if ((point_dist == 0 && way_geom.intersects(bbox_geom)) ||
+                    if ((point_dist == 0 && way_geom.contains(bbox_geom)) ||
                             (point_dist != 0 && way_geom.distance(point_geom_transformed) <= point_dist)) {
                         response_list.add(getEntityResponsebyWay(way, entity_type));
                     }
@@ -171,7 +171,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry relation_geom = relation.getGeometry();
                 try {
                     relation_geom = JTS.transform(relation_geom, transform);
-                    if ((point_dist == 0 && relation_geom.intersects(bbox_geom)) ||
+                    if ((point_dist == 0 && relation_geom.contains(bbox_geom)) ||
                             (point_dist != 0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
                         response_list.add(getEntityResponsebyRelation(relation, entity_type));
                     }
@@ -207,7 +207,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             String landuse = way.getTags().get("landuse");
             if (landuse != null && way.getGeometry() != null) {
                 Geometry geomTransformed = JTS.transform(way.getGeometry(), transform);
-                if (geomTransformed.intersects(bboxTransformed)) {
+                if (geomTransformed.contains(bboxTransformed)) {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
                 }
@@ -218,7 +218,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             String landuse = relation.getTags().get("landuse");
             if (landuse != null && relation.getGeometry() != null) {
                 Geometry geomTransformed = JTS.transform(relation.getGeometry(), transform);
-                if (geomTransformed.intersects(bboxTransformed)) {
+                if (geomTransformed.contains(bboxTransformed)) {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
                 }
