@@ -178,6 +178,11 @@ public class MapServiceImpl extends MapServiceImplBase {
             }
         }
         for (OSMRelation relation : osmData.getRelationsMap().values()) {
+            if(relation.getId() == 67291)
+            {
+                logger.info("relation: " + relation.getTags().get(entity_type));
+                logger.info("type: " + type);
+            }
             if (relation.getTags().get(entity_type) != null
                     && (relation.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 Geometry relation_geom = relation.getGeometry();

@@ -141,9 +141,9 @@ public class OSMParser {
             }
             Element relationElement = (Element) relationNode;
             long relationId = Long.parseLong(relationElement.getAttribute("id"));
-            if(relationId == 67291)
+            if(relationId == 476)
             {
-                logger.info("Relation 67291");
+                logger.info("Relation 476");
             }
             Map<String, String> tags = parseTags(relationElement);
 
@@ -186,6 +186,20 @@ public class OSMParser {
                                     innerPolygons.add(polygon);
                                 }
                                 }
+                            }
+                            else if(wayGeometry instanceof Polygon)
+                            {
+                                Polygon polygon = (Polygon) wayGeometry;
+                                if ("outer".equals(role)) {
+                                    outerPolygons.add(polygon);
+                                } else if ("inner".equals(role)) {
+                                    innerPolygons.add(polygon);
+                                }
+                            }
+                            else
+                            {
+                                logger.warning("Relation " + relationId + " references a way that is not a polygon.");
+                                continue;
                             }
 
                             // Mark the way as referenced
