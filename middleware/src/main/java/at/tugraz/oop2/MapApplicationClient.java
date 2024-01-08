@@ -62,7 +62,7 @@ public class MapApplicationClient {
         String type = stub.getEntitybyId(request).getType();
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         String geom_json = stub.getEntitybyId(request).getGeom();
-        if(name == null && type == null)
+        if(name == "" && type == "")
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Amenity not found");
         }
@@ -96,7 +96,7 @@ public class MapApplicationClient {
         Map<String, String> tags = stub.getEntitybyId(request).getTagsMap();
         long[] child_ids = stub.getEntitybyId(request).getChildIdsList().stream().mapToLong(i -> i).toArray();
         String geom_json = stub.getEntitybyId(request).getGeom();
-        if(name == null && type == null)
+        if(name == "" && type == "")
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "road not found");
         }
