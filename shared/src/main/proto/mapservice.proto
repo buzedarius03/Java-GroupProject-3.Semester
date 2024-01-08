@@ -64,9 +64,18 @@ message UsageResponse {
     string usageInfo = 1;
 }
 
+message RouteRequest{
+    int64 id = 1;
+    int64 from = 2;
+    int64 to = 3;
+    double weighting = 4;
+}
+
+
 service MapService {
     rpc GetEntitybyId(EntitybyIdRequest) returns (EntitybyIdResponse);
     rpc GetAmenity(AmenityRequest) returns (EntityResponse);
     rpc GetRoad(RoadRequest) returns (EntityResponse);
     rpc GetUsage(UsageRequest) returns (UsageResponse);
+    rpc GetRoute(RouteRequest) returns (EntityResponse);
 }
