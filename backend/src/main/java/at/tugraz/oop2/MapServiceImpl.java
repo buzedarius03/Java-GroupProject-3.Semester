@@ -141,7 +141,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry node_geom = node.getGeometry();
                 try {
                     node_geom = JTS.transform(node_geom, transform);
-                    if ((point_dist == 0 && node_geom.contains(bbox_geom)) || (point_dist == 0 && node_geom.intersects(bbox_geom) || (point_dist != 0 && node_geom.distance(point_geom_transformed) <= point_dist))) {
+                    if ((point_dist == 0 && bbox_geom.contains(node_geom)) || (point_dist == 0 && bbox_geom.intersects(node_geom) || (point_dist != 0 && node_geom.distance(point_geom_transformed) <= point_dist))) {
                         response_list.add(getEntityResponsebyNode(node, entity_type));
                     }
                 } catch (Exception e) {
@@ -155,7 +155,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry way_geom = way.getGeometry();
                 try {
                     way_geom = JTS.transform(way_geom, transform);
-                    if ((point_dist == 0 && way_geom.contains(bbox_geom)) || (point_dist == 0 && way_geom.intersects(bbox_geom) || (point_dist != 0 && way_geom.distance(point_geom_transformed) <= point_dist))) {
+                    if ((point_dist == 0 && bbox_geom.contains(way_geom)) || (point_dist == 0 && bbox_geom.intersects(way_geom) || (point_dist != 0 && way_geom.distance(point_geom_transformed) <= point_dist))) {
                         response_list.add(getEntityResponsebyWay(way, entity_type));
                     }
                 } catch (Exception e) {
@@ -169,7 +169,7 @@ public class MapServiceImpl extends MapServiceImplBase {
                 Geometry relation_geom = relation.getGeometry();
                 try {
                     relation_geom = JTS.transform(relation_geom, transform);
-                    if ((point_dist == 0 && relation_geom.contains(bbox_geom)) || (point_dist == 0 && relation_geom.intersects(bbox_geom)) ||  (point_dist != 0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
+                    if ((point_dist == 0 && bbox_geom.contains(relation_geom)) || (point_dist == 0 && bbox_geom.intersects(relation_geom)) ||  (point_dist != 0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
                         response_list.add(getEntityResponsebyRelation(relation, entity_type));
                     }
                 } catch (Exception e) {
