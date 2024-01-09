@@ -324,8 +324,6 @@ public class MapServiceImpl extends MapServiceImplBase {
 
     @Override
     public void getAmenity(AmenityRequest request, StreamObserver<EntityResponse> responseObserver) {
-        try
-        {
             String amenity = request.getType();
             double[] tl = { request.getBbox().getTlX(), request.getBbox().getTlY() };
             double[] br = { request.getBbox().getBrX(), request.getBbox().getBrY() };
@@ -337,17 +335,11 @@ public class MapServiceImpl extends MapServiceImplBase {
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-        }
-        catch(ResponseStatusException e)
-        {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could't find amenity");
-        }
         
     }
 
     @Override
     public void getRoad(RoadRequest request, StreamObserver<EntityResponse> responseObserver) {
-        try{
         String road = request.getType();
         double[] tl = { request.getBbox().getTlX(), request.getBbox().getTlY() };
         double[] br = { request.getBbox().getBrX(), request.getBbox().getBrY() };
@@ -359,11 +351,6 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
-        }
-        catch(ResponseStatusException e)
-        {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find road");
-        }
     }
 
     @Override
