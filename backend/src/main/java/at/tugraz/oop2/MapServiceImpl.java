@@ -134,7 +134,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             sourceCRS = CRS.decode("EPSG:4326");
             targetCRS = CRS.decode("EPSG:31256");
             transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
-            bbox_geom = bbox;
+            bbox_geom = JTS.transform(bbox, transform);
             point_geom_transformed = JTS.transform(point_geom, transform);
         } catch (Exception e) {
             logger.warning("Error transforming bbox or point to EPSG:31256" + e.toString());
