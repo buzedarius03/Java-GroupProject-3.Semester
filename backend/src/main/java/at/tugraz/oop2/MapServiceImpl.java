@@ -340,7 +340,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         }
         catch(ResponseStatusException e)
         {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could't find amenity");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "could't find amenity");
         }
         
     }
@@ -362,7 +362,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         }
         catch(ResponseStatusException e)
         {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find road");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "couldn't find road");
         }
     }
 
