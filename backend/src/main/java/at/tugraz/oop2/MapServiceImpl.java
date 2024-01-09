@@ -47,6 +47,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         GeoJsonWriter writer = new GeoJsonWriter();
 
         String geoJson = writer.write(geometry);
+
         // replace "EPSG:4326" with "EPSG:0"?
         // this ist not ok and just a test bc i dont know how what kind of model epsg:0
         // is?
@@ -133,7 +134,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             sourceCRS = CRS.decode("EPSG:4326");
             targetCRS = CRS.decode("EPSG:31256");
             transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
-            bbox_geom = JTS.transform(bbox, transform);
+            bbox_geom = bbox;
             point_geom_transformed = JTS.transform(point_geom, transform);
         } catch (Exception e) {
             logger.warning("Error transforming bbox or point to EPSG:31256" + e.toString());
