@@ -53,6 +53,10 @@ public class OSMParser {
             Map<String, String> tags = parseTags(nodeElement);
 
             OSMNode node = new OSMNode(id, point, tags);
+            if(node.getTags().containsKey("highway") && node.getId() == 21267146)
+            {
+                logger.info("Road Node");
+            }
             nodesMap.put(id, node);
         }
 
@@ -84,6 +88,10 @@ public class OSMParser {
                         Point nodePoint;
                         try {
                             nodePoint = nodesMap.get(nodeId).getGeometry();
+                            if(nodesMap.get(nodeId).getTags().containsKey("highway") && nodesMap.get(nodeId).getId() == 21267146)
+                            {
+                                logger.info("Road Node");
+                            }
                         } catch (Exception e) {
                             logger.warning("Node " + j + " of way " + i + " does not exist.");
                             continue;
@@ -304,8 +312,6 @@ public class OSMParser {
             parseRelations(document, nodesMap, waysMap, relationsMap, referencedNodes, referencedWays);
 
             // retain only unreferenced nodes and ways
-            nodesMap.keySet().removeIf(key -> referencedNodes.containsKey(key));
-            waysMap.keySet().removeIf(key -> referencedWays.containsKey(key));
 
             logger.info("Parsing complete.");
             // there should be around 15k Nodes, 63k Ways and 890 Relations left
