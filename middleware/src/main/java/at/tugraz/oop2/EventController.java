@@ -95,9 +95,6 @@ public class EventController {
                         point[1] = bbox_tl_y;
                 }
                 Amenity[] amenities = client.getAmenity(amenity, point, bbox_br, point_dist);
-                if (amenities.length == 0) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No amenities found");
-                }
 
                 Amenity[] amenities_taken = Arrays.copyOfRange(amenities, skip, Math.min(take + skip, amenities.length));
                 int total = amenities.length;
@@ -172,10 +169,6 @@ public class EventController {
                 // Not sure about the next three lines!!!!
                 Road[] roads_taked = Arrays.copyOfRange(roads, skip, Math.min(take + skip, roads.length));
                 int total = roads.length;
-                if(roads.length == 0)
-                {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no roads found");
-                }
                 return new ResponseEntity<Map<String, Object>>(Map.of(
                                 "entries", roads_taked,
                                 "paging", Map.of(
