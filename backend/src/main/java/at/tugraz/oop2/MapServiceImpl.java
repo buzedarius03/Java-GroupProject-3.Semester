@@ -58,11 +58,24 @@ public class MapServiceImpl extends MapServiceImplBase {
     private EntitybyIdResponse getEntityResponsebyWay(OSMWay way, String entity_type) {
         String name = way.getTags().getOrDefault("name", "");
         String type = way.getTags().getOrDefault(entity_type, "");
-        String geoJson = geometryToGeoJson(way.getGeometry());
         long[] node_ids = way.getChild_ids();
         long id = way.getId();
+        CoordinateReferenceSystem sourceCRS_end = null;
+        CoordinateReferenceSystem targetCRS_end = null;
+        MathTransform transform_end = null;
+        Geometry way_geom = null;
+        try{
+            sourceCRS_end = CRS.decode("EPSG:4326");
+            targetCRS_end = CRS.decode("EPSG:0");
+            transform_end = CRS.findMathTransform(sourceCRS_end, targetCRS_end, true);
+            way_geom = JTS.transform(way.getGeometry(), transform_end);
+        }
+        catch(Exception e)
+        {
+            logger.warning("Error transforming end node to EPSG:31256" + e.toString());
+        }
         logger.info("Found way with name " + name + " and type " + type);
-
+        String geoJson = geometryToGeoJson(way_geom);
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
@@ -78,11 +91,24 @@ public class MapServiceImpl extends MapServiceImplBase {
     private EntitybyIdResponse getEntityResponsebyRelation(OSMRelation relation, String entity_type) {
         String name = relation.getTags().getOrDefault("name", "");
         String type = relation.getTags().getOrDefault(entity_type, "");
-        String geoJson = geometryToGeoJson(relation.getGeometry());
         long[] child_ids = relation.getChild_ids();
         long id = relation.getId();
+        CoordinateReferenceSystem sourceCRS_end = null;
+        CoordinateReferenceSystem targetCRS_end = null;
+        MathTransform transform_end = null;
+        Geometry relation_geom = null;
+        try{
+            sourceCRS_end = CRS.decode("EPSG:4326");
+            targetCRS_end = CRS.decode("EPSG:0");
+            transform_end = CRS.findMathTransform(sourceCRS_end, targetCRS_end, true);
+            relation_geom = JTS.transform(relation.getGeometry(), transform_end);
+        }
+        catch(Exception e)
+        {
+            logger.warning("Error transforming end node to EPSG:31256" + e.toString());
+        }
         logger.info("Found relation with name " + name + " and type " + type);
-
+        String geoJson = geometryToGeoJson(relation_geom);
         EntitybyIdResponse.Builder response_Builder = EntitybyIdResponse.newBuilder()
                 .setName(name)
                 .setType(type)
@@ -100,9 +126,25 @@ public class MapServiceImpl extends MapServiceImplBase {
     private EntitybyIdResponse getEntityResponsebyNode(OSMNode node, String entity_type) {
         String name = node.getTags().getOrDefault("name", "");
         String type = node.getTags().getOrDefault(entity_type, "");
-        String geoJson = geometryToGeoJson(node.getGeometry());
         long id = node.getId();
         logger.info("Found node with name " + name + " and type " + type);
+
+        CoordinateReferenceSystem sourceCRS_end = null;
+        CoordinateReferenceSystem targetCRS_end = null;
+        MathTransform transform_end = null;
+        Geometry node_geom = null;
+
+        try{
+            sourceCRS_end = CRS.decode("EPSG:4326");
+            targetCRS_end = CRS.decode("EPSG:0");
+            transform_end = CRS.findMathTransform(sourceCRS_end, targetCRS_end, true);
+            node_geom = JTS.transform(node.getGeometry(), transform_end);
+        }
+        catch(Exception e)
+        {
+            logger.warning("Error transforming end node to EPSG:31256" + e.toString());
+        }
+        String geoJson = geometryToGeoJson(node_geom);
         
         EntitybyIdResponse response = EntitybyIdResponse.newBuilder()
                 .setName(name)
