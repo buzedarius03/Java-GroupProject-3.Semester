@@ -13,6 +13,7 @@ import at.tugraz.oop2.Mapservice.EntityResponse;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
@@ -195,16 +196,35 @@ public class MapServiceImpl extends MapServiceImplBase {
                 {
                     logger.info("relation not valid");
                 }
-                boolean contains = bbox_geom.contains(relation_geom);
-                boolean intersects = bbox_geom.intersects(relation_geom);
-                Coordinate[] distance = relation_geom.getCoordinates();
-                Coordinate[] distance2 = bbox_geom.getCoordinates();
-                double dist = relation_geom.distance(bbox_geom);
+                if(!relation_geom.isValid())
+                {
+                    logger.info("relation not valid");
+                }
                 try {
                     relation_geom = JTS.transform(relation_geom, transform);
-                    if ((point_dist == 0.0 && bbox_geom.contains(relation_geom)) || (point_dist == 0.0 && bbox_geom.intersects(relation_geom))
-                     ||  (point_dist != 0.0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
-                        response_list.add(getEntityResponsebyRelation(relation, entity_type));
+                    if(relation_geom instanceof GeometryCollection)
+                    {
+                        int geom_number = relation_geom.getNumGeometries();
+                        for(int i = 0; i < geom_number; i++)
+                        {
+                            Geometry geom = relation_geom.getGeometryN(i);
+                            if ((point_dist == 0.0 && bbox_geom.contains(geom)) || (point_dist == 0.0 && bbox_geom.intersects(geom))
+                             ||  (point_dist != 0.0 && geom.distance(point_geom_transformed) <= point_dist)) {
+                                response_list.add(getEntityResponsebyRelation(relation, entity_type));
+                                break;
+                            }
+                        }
+                    }
+                    else{
+                        boolean contains = bbox_geom.contains(relation_geom);
+                        boolean intersects = bbox_geom.intersects(relation_geom);
+                        Coordinate[] distance = relation_geom.getCoordinates();
+                        Coordinate[] distance2 = bbox_geom.getCoordinates();
+                        double dist = relation_geom.distance(bbox_geom);
+                        if ((point_dist == 0.0 && bbox_geom.contains(relation_geom)) || (point_dist == 0.0 && bbox_geom.intersects(relation_geom))
+                        ||  (point_dist != 0.0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
+                            response_list.add(getEntityResponsebyRelation(relation, entity_type));
+                        }
                     }
                 } catch (Exception e) {
                     logger.warning("Error transforming relation to EPSG:31256" + e.toString());

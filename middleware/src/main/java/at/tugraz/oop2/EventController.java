@@ -43,7 +43,7 @@ public class EventController {
             @RequestParam(value = "take", defaultValue = "50") int take,
             @RequestParam(value = "skip", defaultValue = "0") int skip) {
         try{
-                boolean isBbox = (bbox_br_x != 0 && bbox_br_y != 0 && bbox_tl_x != 0 && bbox_tl_y != 0);
+                boolean isBbox = (bbox_br_x != 0 || bbox_br_y != 0 || bbox_tl_x != 0 || bbox_tl_y != 0);
                 boolean isPoint = (point_x != 0 && point_y != 0 && point_dist > 0);
         
                 // point or bbox parameters can't be both 0 or both given

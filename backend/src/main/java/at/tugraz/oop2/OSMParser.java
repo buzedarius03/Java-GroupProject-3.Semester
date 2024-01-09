@@ -187,6 +187,15 @@ public class OSMParser {
                                 }
                                 }
                             }
+                            if(wayGeometry instanceof Polygon)
+                            {
+                                Polygon polygon = (Polygon) wayGeometry;
+                                if ("outer".equals(role)) {
+                                    outerPolygons.add(polygon);
+                                } else if ("inner".equals(role)) {
+                                    innerPolygons.add(polygon);
+                                }
+                            }
 
                             // Mark the way as referenced
                             way.setReferenced(true);
