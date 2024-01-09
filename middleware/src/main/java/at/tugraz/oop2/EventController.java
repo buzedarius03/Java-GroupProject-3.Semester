@@ -115,10 +115,10 @@ public class EventController {
                 Error_Response error_response = new Error_Response(e.getReason());
                 return new ResponseEntity<Object>(error_response, e.getStatusCode());
         }
-        catch(Exception e)
+      /*  catch(Exception e)
         {       Error_Response error_response = new Error_Response("internal server error");
                 return new ResponseEntity<Object>( error_response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        }*/
     }
 
     @GetMapping("/amenities/{id}")
