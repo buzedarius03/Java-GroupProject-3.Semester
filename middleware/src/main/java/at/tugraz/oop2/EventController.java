@@ -240,4 +240,17 @@ public class EventController {
                 }
                 return json;
         }
+
+    @GetMapping("/routing")
+    public Map<String, Object> EntityResponse(@RequestParam(value = "routing", defaultValue = " ") String routing)
+    {
+                JSONParser parser = new JSONParser();
+                JSONObject json = null;
+                try {
+                json = (JSONObject) parser.parse(routing);
+                } catch (ParseException e) {
+                e.printStackTrace();
+                }
+                return json;
+    }
 }
