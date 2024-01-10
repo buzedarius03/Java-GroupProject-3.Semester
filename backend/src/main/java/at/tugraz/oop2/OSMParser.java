@@ -63,8 +63,7 @@ public class OSMParser {
         logger.info("Parsed " + nodesMap.size() + " nodes.");
     }
 
-    private void parseWays(Document document, Map<Long, OSMNode> nodesMap, Map<Long, OSMWay> waysMap,
-            Map<Long, Boolean> referencedNodes) {
+    private void parseWays(Document document, Map<Long, OSMNode> nodesMap, Map<Long, OSMWay> waysMap) {
         NodeList wayList = document.getElementsByTagName("way");
         int numWays = wayList.getLength();
         int u = 0;
@@ -98,7 +97,6 @@ public class OSMParser {
                         }
                         coords.add(nodePoint.getCoordinate());
                         nodesMap.get(nodeId).setReferenced(true);  // set the node object isreferenced to true for that way
-                        referencedNodes.put(nodeId, Boolean.TRUE);            // the old way of doing it... here for legacy reasons :)
                         child_ids[j] = nodeId;
                     }
                 }
@@ -134,8 +132,7 @@ public class OSMParser {
     }
 
     private void parseRelations(Document document, Map<Long, OSMNode> nodesMap, Map<Long, OSMWay> waysMap,
-            Map<Long, OSMRelation> relationsMap, Map<Long, Boolean> referencedNodes,
-            Map<Long, Boolean> referencedWays) {
+            Map<Long, OSMRelation> relationsMap) {
         int u = 0;
         int x = 0;
         NodeList relationList = document.getElementsByTagName("relation");
@@ -207,7 +204,6 @@ public class OSMParser {
 
                             // Mark the way as referenced
                             way.setReferenced(true);
-                            referencedWays.put(ref, Boolean.TRUE);
                         }
                     }
 
@@ -300,18 +296,33 @@ public class OSMParser {
             Document document = builder.parse(osmfile);
 
             Map<Long, OSMNode> nodesMap = new HashMap<>();
-            Map<Long, Boolean> referencedNodes = new HashMap<>();
 
             Map<Long, OSMWay> waysMap = new HashMap<>();
-            Map<Long, Boolean> referencedWays = new HashMap<>();
 
             Map<Long, OSMRelation> relationsMap = new HashMap<>();
 
             parseNodes(document, nodesMap);
-            parseWays(document, nodesMap, waysMap, referencedNodes);
-            parseRelations(document, nodesMap, waysMap, relationsMap, referencedNodes, referencedWays);
+            parseWays(document, nodesMap, waysMap);
+            parseRelations(document, nodesMap, waysMap, relationsMap);
 
-            // retain only unreferenced nodes and ways
+            // count the number of unreferenced nodes
+            int unreferencedNodes = 0;
+            for (Map.Entry<Long, OSMNode> entry : nodesMap.entrySet()) {
+                if (!entry.getValue().isReferenced()) {
+                    unreferencedNodes++;
+                }
+            }
+
+            // count the number of unreferenced ways
+            int unreferencedWays = 0;
+            for (Map.Entry<Long, OSMWay> entry : waysMap.entrySet()) {
+                if (!entry.getValue().isReferenced()) {
+                    unreferencedWays++;
+                }
+            }
+
+            // notify the logger that the backend finished parsing
+            MapLogger.backendLoadFinished(unreferencedNodes, unreferencedWays, relationsMap.size());
 
             logger.info("Parsing complete.");
             // there should be around 15k Nodes, 63k Ways and 890 Relations left

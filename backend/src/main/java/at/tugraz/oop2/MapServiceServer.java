@@ -57,12 +57,6 @@ public class MapServiceServer {
             System.exit(1);
         }
 
-        if (data != null) {
-            
-            // notify the logger that the backend finished parsing
-            MapLogger.backendLoadFinished(data.getNodesMap().size(), data.getWaysMap().size(), data.getRelationsMap().size());
-        }
-        
         // create a MapTileRenderer object and render a tile
         //OSMTileRenderer renderer = new OSMTileRenderer(data);
         //renderer.renderTile(0, 0, 0, "motorway,trunk,primary,secondary,road,forest,residential,vineyard,grass,railway,water", "tile.png");
