@@ -45,11 +45,15 @@ public class MapServiceServer {
             Jmap_backend_port = 8020;
         }
         MapLogger.backendStartup(Jmap_backend_port, jmap_backend_osmfile);
+        
+        // start the backend after parsing
+        MapServiceServer server = new MapServiceServer();
 
         // Create OSMData Object and parse the OSM file
         OSMParser parser = new OSMParser(jmap_backend_osmfile);
         try {
             data = parser.parse();
+            logger.info("OSM file parsed.");
         }
         // catch exceptions and exit if something goes wrong during parsing
          catch (Exception e) {
@@ -62,10 +66,8 @@ public class MapServiceServer {
         //renderer.renderTile(0, 0, 0, "motorway,trunk,primary,secondary,road,forest,residential,vineyard,grass,railway,water", "tile.png");
         //renderer.renderTile(8894, 5757, 14, "motorway,trunk,primary,secondary,road,forest,residential,vineyard,grass,railway,water", "tile3.png");
 
-        
-        // start the backend after parsing
-        MapServiceServer server = new MapServiceServer();
-        try {
+        if (data != null) {
+            try {
             server.start(Jmap_backend_port);
             logger.info("Backend started.");
         } catch (Exception e) {
@@ -73,6 +75,8 @@ public class MapServiceServer {
             System.exit(1);
         }
         
+        }
+       
     }
     public OSMData getData() {
         return data;
