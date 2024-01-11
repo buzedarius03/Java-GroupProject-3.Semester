@@ -6,6 +6,7 @@ import at.tugraz.oop2.MapServiceGrpc.MapServiceImplBase;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
 import at.tugraz.oop2.Mapservice.RoadRequest;
+import at.tugraz.oop2.Mapservice.RouteRequest;
 import at.tugraz.oop2.Mapservice.UsageRequest;
 import at.tugraz.oop2.Mapservice.UsageResponse;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
@@ -401,5 +402,27 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getRoute(RouteRequest request, StreamObserver<EntityResponse> responseObserver) {
+        try{
+            long from_node_id = request.getFrom();
+            long to_node_id = request.getTo();
+            String weighting = request.getWeighting();
+
+
+            //EntityResponse response = getEntityResponse(tl_coord, br_coord, point, 0, "highway", road);
+            double[] point = { 0, 0 };
+            Coordinate x = new Coordinate();
+            Coordinate y = new Coordinate();
+            EntityResponse response = getEntityResponse(x, y, point, 0, "highway", "hello");
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+        catch(ResponseStatusException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find route");
+        }
     }
 }
