@@ -12,6 +12,13 @@ import at.tugraz.oop2.Mapservice.UsageResponse;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.EntityResponse;
 
+import org.geotools.graph.structure.DirectedGraph;
+import org.geotools.graph.structure.Graph;
+import org.geotools.graph.structure.Node;
+import org.geotools.graph.structure.basic.BasicDirectedNode;
+import org.geotools.graph.traverse.standard.DijkstraIterator;
+import org.locationtech.jts.geom.Coordinate;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -33,6 +40,7 @@ import org.json.simple.JSONObject;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
 public class MapServiceImpl extends MapServiceImplBase {
@@ -404,24 +412,28 @@ public class MapServiceImpl extends MapServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    
     @Override
     public void getRoute(RouteRequest request, StreamObserver<EntityResponse> responseObserver) {
-        try{
+        try {
             long from_node_id = request.getFrom();
             long to_node_id = request.getTo();
             String weighting = request.getWeighting();
 
+            if (!osmData.getNodesMap().containsKey(from_node_id) || !osmData.getNodesMap().containsKey(to_node_id)) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or both nodes not found");
+            }
 
-            //EntityResponse response = getEntityResponse(tl_coord, br_coord, point, 0, "highway", road);
-            double[] point = { 0, 0 };
-            Coordinate x = new Coordinate();
-            Coordinate y = new Coordinate();
-            EntityResponse response = getEntityResponse(x, y, point, 0, "highway", "hello");
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-        }
-        catch(ResponseStatusException e)
-        {
+            OSMNode from_node = osmData.getNodesMap().get(from_node_id);
+            OSMNode to_node = osmData.getNodesMap().get(to_node_id);
+
+            if(from_node == null || to_node == null)
+            {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "node not found");
+            }
+
+            
+        } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find route");
         }
     }

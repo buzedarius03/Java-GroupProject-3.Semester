@@ -118,7 +118,7 @@ public class MapApplicationClient {
         return null;
     }
 
-    public Road[] getRouteInfo(int from_node_id, int to_node_id, String weighting) {
+    public Road[] getRoute(int from_node_id, int to_node_id, String weighting) {
         RouteRequest request = RouteRequest.newBuilder().setFrom(from_node_id).setTo(to_node_id).setWeighting(weighting).build();
         Road[] roads = stub.getRoute(request).getEntityList().stream().map(road1 -> {
             String name = road1.getName();

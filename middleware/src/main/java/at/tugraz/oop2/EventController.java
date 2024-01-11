@@ -273,7 +273,7 @@ public class EventController {
                                 HttpStatus.OK);*/
         try{
                 
-                Road[] route = client.getRouteInfo(from_node_id, to_node_id, weighting);
+                Road[] route = client.getRoute(from_node_id, to_node_id, weighting);
                 return new ResponseEntity<>(route, HttpStatus.OK);
                 
         }    
