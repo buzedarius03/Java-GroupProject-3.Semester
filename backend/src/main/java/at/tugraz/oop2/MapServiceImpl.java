@@ -432,7 +432,24 @@ public class MapServiceImpl extends MapServiceImplBase {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "node not found");
             }
 
-            
+            /*DijkstraIterator seek_algorithm = new DijkstraIterator(graph, fromNode, request.getWeighting());
+
+            // Placeholder: You need to implement your actual routing logic here
+    
+            // Construct a response with the nodes along the route
+            List<EntitybyIdResponse> responseList = new ArrayList<>();
+            for (long node_id : routeNodeIds) {
+                OSMNode node = osmData.getNodesMap().get(node_id);
+                if (node != null) {
+                    responseList.add(getEntityResponsebyNode(node, "highway"));
+                }
+            }
+
+
+    
+            EntityResponse response = EntityResponse.newBuilder().addAllEntity(responseList).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();*/
         } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find route");
         }
