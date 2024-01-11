@@ -242,8 +242,10 @@ public class EventController {
         }
 
     @GetMapping("/routing")
-    public Map<String, Object> EntityResponse(@RequestParam(value = "routing", defaultValue = " ") String routing)
-    {
+    public Map<String, Object> EntityResponse(@RequestParam(value = "routing", defaultValue = " ") String routing,
+            @RequestParam(value = "from_node_id", defaultValue = "0") int from_node_id,
+            @RequestParam(value = "to_node_id", defaultValue = "0.0") int to_node_id,
+            @RequestParam(value = "weighting", defaultValue = "") String weighting) {
                 JSONParser parser = new JSONParser();
                 JSONObject json = null;
                 try {

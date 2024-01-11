@@ -68,7 +68,7 @@ message RouteRequest{
     int64 id = 1;
     int64 from = 2;
     int64 to = 3;
-    double weighting = 4;
+    string weighting = 4;
 }
 
 
