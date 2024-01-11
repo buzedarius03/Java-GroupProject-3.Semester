@@ -273,8 +273,8 @@ public class EventController {
         }
     @GetMapping("/routing")
     public ResponseEntity<?> getRoute(@RequestParam(value = "routing", defaultValue = "") String routing,
-            @RequestParam(value = "from_node_id", defaultValue = "0") int from_node_id,
-            @RequestParam(value = "to_node_id", defaultValue = "0.0") int to_node_id,
+            @RequestParam(value = "from_node_id", defaultValue = "0") long from_node_id,
+            @RequestParam(value = "to_node_id", defaultValue = "0.0") long to_node_id,
             @RequestParam(value = "weighting", defaultValue = "") String weighting) {
                 
                 /*Road roads = client.getRoad(weighting, null, null);
