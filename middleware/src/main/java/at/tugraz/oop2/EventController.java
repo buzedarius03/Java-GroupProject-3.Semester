@@ -223,25 +223,54 @@ public class EventController {
     }
 
     @GetMapping("/usage")
-    public Map<String, Object> getUsage(@RequestParam(value = "usage", defaultValue = " ") String usage,
+    public ResponseEntity<?> getUsage(@RequestParam(value = "usage", defaultValue = " ") String usage,
             @RequestParam(value = "bbox.tl.x", defaultValue = "0.0") double bbox_tl_x,
             @RequestParam(value = "bbox.tl.y", defaultValue = "0.0") double bbox_tl_y,
             @RequestParam(value = "bbox.br.x", defaultValue = "0.0") double bbox_br_x,
             @RequestParam(value = "bbox.br.y", defaultValue = "0.0") double bbox_br_y) {
-                double[] bbox_br = { bbox_br_x, bbox_br_y };
-                double[] bbox_tl = { bbox_tl_x, bbox_tl_y };
-                String landusages = client.getUsageInfo(usage, bbox_tl, bbox_br);
+                try{
+                        // y parameters must be between -90.0 and 90.0
+                        if(bbox_br_y > 90.0 || bbox_br_y < -90.0)
+                        {
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
+                        }
+                        if(bbox_tl_y > 90.0 || bbox_tl_y < -90.0)
+                        {
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
+                        }
+                        // x parameters must be betwen -180.0 and 180.0
+                        if(bbox_br_x > 180.0 || bbox_br_x < -180.0)
+                        {
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
+                        }
+                        if(bbox_tl_x > 180.0 || bbox_tl_x < -180.0)
+                        {
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "out of bounds");
+                        }
+                        double[] bbox_br = { bbox_br_x, bbox_br_y };
+                        double[] bbox_tl = { bbox_tl_x, bbox_tl_y };
+                        String landusages = client.getUsageInfo(usage, bbox_tl, bbox_br);
 
-                JSONParser parser = new JSONParser();
-                JSONObject json = null;
-                try {
-                json = (JSONObject) parser.parse(landusages);
-                } catch (ParseException e) {
-                e.printStackTrace();
+                        JSONParser parser = new JSONParser();
+                        JSONObject json = null;
+                
+                        try {
+                        json = (JSONObject) parser.parse(landusages);
+                        } catch (ParseException e) {
+                        e.printStackTrace();
+                        }
+                        return new ResponseEntity<>(json, HttpStatus.OK);
                 }
-                return json;
+                catch(ResponseStatusException e)
+                {
+                        Error_Response error_response = new Error_Response(e.getReason());
+                        return new ResponseEntity<Object>(error_response, e.getStatusCode());
+                }
+                catch(Exception e)
+                {       Error_Response error_response = new Error_Response("internal server error");
+                        return new ResponseEntity<Object>( error_response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
         }
-
     @GetMapping("/routing")
     public ResponseEntity<?> getRoute(@RequestParam(value = "routing", defaultValue = " ") String routing,
             @RequestParam(value = "from_node_id", defaultValue = "0") int from_node_id,
