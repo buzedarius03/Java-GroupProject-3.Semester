@@ -3,6 +3,7 @@ package at.tugraz.oop2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.RouteMatcher.Route;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -242,17 +243,32 @@ public class EventController {
         }
 
     @GetMapping("/routing")
-    public Map<String, Object> EntityResponse(@RequestParam(value = "routing", defaultValue = " ") String routing,
+    public ResponseEntity<?> getRoute(@RequestParam(value = "routing", defaultValue = " ") String routing,
             @RequestParam(value = "from_node_id", defaultValue = "0") int from_node_id,
             @RequestParam(value = "to_node_id", defaultValue = "0.0") int to_node_id,
             @RequestParam(value = "weighting", defaultValue = "") String weighting) {
-                JSONParser parser = new JSONParser();
-                JSONObject json = null;
-                try {
-                json = (JSONObject) parser.parse(routing);
-                } catch (ParseException e) {
-                e.printStackTrace();
+                
+                /*Road roads = client.getRoad(weighting, null, null);
+                Route[] roads_taken = Arrays.copyOfRange(roads, skip, Math.min(take + skip, roads.length));
+                int total = roads.length;
+                if(roads.length == 0)
+                {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no roads found");
                 }
-                return json;
+                return new ResponseEntity<Map<String, Object>>(Map.of(
+                                "entries", roads_taken,
+                                "paging", Map.of(
+                                        "skip", skip,
+                                        "take", take,
+                                        "total", total)),
+                                HttpStatus.OK);*/
+                Road[] route = client.getRouteInfo(from_node_id, to_node_id, weighting);
+                return new ResponseEntity<Map<String, Object>>(Map.of(
+                                "entries", route,
+                                "paging", Map.of(
+                                        "skip", 100,
+                                        "take", 100,
+                                        "total", 200)),
+                                HttpStatus.OK);    
     }
 }

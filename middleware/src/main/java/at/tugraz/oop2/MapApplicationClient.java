@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
+import at.tugraz.oop2.Mapservice.RouteRequest;
 import at.tugraz.oop2.Mapservice.UsageRequest;
 import at.tugraz.oop2.Mapservice.Bbox;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
@@ -112,8 +113,24 @@ public class MapApplicationClient {
         return usage_info;
     }
 
+
     public byte[] getTile(int z, int x, int y, String layers) {
         return null;
+    }
+
+    public Road[] getRouteInfo(int from_node_id, int to_node_id, String weighting) {
+        RouteRequest request = RouteRequest.newBuilder().setFrom(from_node_id).setTo(to_node_id).setWeighting(weighting).build();
+        Road[] roads = stub.getRoute(request).getEntityList().stream().map(road1 -> {
+            String name = road1.getName();
+            long id = road1.getId();
+            String type = road1.getType();
+            Map<String, String> tags = road1.getTagsMap();
+            long[] child_ids = road1.getChildIdsList().stream().mapToLong(i -> i).toArray();
+            String geom_json = road1.getGeom();
+            return new Road(name, id, tags, type, child_ids, geom_json);
+        }).sorted(Comparator.comparingLong(Road::getId))
+        .toArray(Road[]::new);
+         return roads;
     }
 
 }
