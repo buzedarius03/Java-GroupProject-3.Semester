@@ -108,6 +108,10 @@ public class MapApplicationClient {
         UsageRequest request = UsageRequest.newBuilder().setUsage(usage).setBbox(Bbox.newBuilder().setTlX(bbox_tl[0]).setTlY(bbox_tl[1])
         .setBrX(bbox_br[0]).setBrY(bbox_br[1]).build()).build();
         
+        if(usage == "" && (bbox_tl == null || bbox_br == null))
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "road not found");
+        }
         String usage_info = stub.getUsage(request).getUsageInfo();
         
         return usage_info;
