@@ -434,7 +434,7 @@ public class MapServiceImpl extends MapServiceImplBase {
 
             /*DijkstraIterator seek_algorithm = new DijkstraIterator(graph, fromNode, request.getWeighting());
 
-            // Placeholder: You need to implement your actual routing logic here
+  
     
             // Construct a response with the nodes along the route
             List<EntitybyIdResponse> responseList = new ArrayList<>();

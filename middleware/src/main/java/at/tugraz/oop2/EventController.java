@@ -274,6 +274,9 @@ public class EventController {
         try{
                 
                 Road[] route = client.getRoute(from_node_id, to_node_id, weighting);
+                if (route.length == 0) {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No roads on this route found");
+                }
                 return new ResponseEntity<>(route, HttpStatus.OK);
                 
         }    
