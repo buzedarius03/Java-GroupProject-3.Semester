@@ -262,13 +262,36 @@ public class EventController {
                                         "take", take,
                                         "total", total)),
                                 HttpStatus.OK);*/
-                Road[] route = client.getRouteInfo(from_node_id, to_node_id, weighting);
+
+                /*Road[] route = client.getRouteInfo(from_node_id, to_node_id, weighting);
                 return new ResponseEntity<Map<String, Object>>(Map.of(
                                 "entries", route,
                                 "paging", Map.of(
                                         "skip", 100,
                                         "take", 100,
                                         "total", 200)),
-                                HttpStatus.OK);    
+                                HttpStatus.OK);*/
+        try{
+                
+                        Road[] route = client.getRouteInfo(from_node_id, to_node_id, weighting);
+                        return new ResponseEntity<Map<String, Object>>(Map.of(
+                                "entries", route,
+                                "paging", Map.of(
+                                        "skip", 100,
+                                        "take", 100,
+                                        "total", 200)),
+                                HttpStatus.OK);
+                
+        }    
+        catch(ResponseStatusException e)
+        {
+                Error_Response error_response = new Error_Response(e.getReason());
+                return new ResponseEntity<>(error_response, e.getStatusCode());
+        }
+        catch(Exception e)
+        {
+                Error_Response error_response = new Error_Response("internal server error");
+                return new ResponseEntity<>(error_response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
