@@ -421,7 +421,7 @@ public class MapServiceImpl extends MapServiceImplBase {
             String weighting = request.getWeighting();
 
             if (!osmData.getNodesMap().containsKey(from_node_id) || !osmData.getNodesMap().containsKey(to_node_id)) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or both nodes not found");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, " node not found ");
             }
 
             OSMNode from_node = osmData.getNodesMap().get(from_node_id);
@@ -436,7 +436,7 @@ public class MapServiceImpl extends MapServiceImplBase {
 
   
     
-            // Construct a response with the nodes along the route
+
             List<EntitybyIdResponse> responseList = new ArrayList<>();
             for (long node_id : routeNodeIds) {
                 OSMNode node = osmData.getNodesMap().get(node_id);
