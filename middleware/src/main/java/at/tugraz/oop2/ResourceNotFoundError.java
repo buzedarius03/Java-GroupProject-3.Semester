@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------------------------------------
-// InternalServerError.java
+// ResourceNotFoundError.java
 //
 // This file defines a custom exception class named ResourceNotFoundError that extends the RuntimeException class. 
 // It is intended to be thrown in situations where an unfound resouse error occurs within a program.

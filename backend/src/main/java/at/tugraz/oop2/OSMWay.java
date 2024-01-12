@@ -1,3 +1,14 @@
+//---------------------------------------------------------------------------------------------------------------------
+// OSMWay.java
+//
+// This file defines the OSMWay class, which has the ways information from the OSM data.  Each way has an id, geometry,
+// tags , child IDs and a flag indicating whether it is referenced. 
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
+
+
 package at.tugraz.oop2;
 
 import java.util.Map;

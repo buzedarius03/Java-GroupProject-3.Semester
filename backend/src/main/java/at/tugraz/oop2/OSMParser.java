@@ -1,3 +1,15 @@
+//---------------------------------------------------------------------------------------------------------------------
+// OSMParser.java
+//
+// This file defines the OSMParser class, responsible for parsing the OSM data and converting it into
+// OSMData objects. The parser extracts the informations about nodes, ways, and relations, creating OSMNode,
+// OSMWay, and OSMRelation. Additionally, the class handles the construction of geometries, including parsing
+// tags, checking for road nodes, and building multipolygons from ways.
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
+
 package at.tugraz.oop2;
 
 import org.w3c.dom.*;

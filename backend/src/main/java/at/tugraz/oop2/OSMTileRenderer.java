@@ -1,3 +1,13 @@
+//---------------------------------------------------------------------------------------------------------------------
+// OSMTileRenderer.java
+//
+// This file defines the OSMTileRenderer class, responsible for rendering map tiles with the OSM data.
+// It uses Java's BufferedImage and Graphics2D to draw roads, land usage, and water bodies. 
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
+
 package at.tugraz.oop2;
 
 import org.locationtech.jts.geom.*;
