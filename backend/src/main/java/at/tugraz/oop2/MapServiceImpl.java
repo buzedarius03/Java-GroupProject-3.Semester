@@ -161,11 +161,6 @@ public class MapServiceImpl extends MapServiceImplBase {
         }
 
         for (OSMNode node : osmData.getNodesMap().values()) {
-            if(node.getId() == 67291)
-            {
-                logger.info("node: " + node.getTags().get(entity_type));
-                logger.info("type: " + type);
-            }
             if (node.getTags().get(entity_type) != null
                     && (node.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 Geometry node_geom = node.getGeometry();
@@ -181,11 +176,6 @@ public class MapServiceImpl extends MapServiceImplBase {
             }
         }
         for (OSMWay way : osmData.getWaysMap().values()) {
-            if(way.getId() == 67291)
-            {
-                logger.info("way: " + way.getTags().get(entity_type));
-                logger.info("type: " + type);
-            }
             if (way.getTags().get(entity_type) != null
                     && (way.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 Geometry way_geom = way.getGeometry();
@@ -201,27 +191,9 @@ public class MapServiceImpl extends MapServiceImplBase {
             }
         }
         for (OSMRelation relation : osmData.getRelationsMap().values()) {
-            if(relation.getId() == 476)
-            {
-                logger.info("relation: " + relation.getTags().get(entity_type));
-                logger.info("type: " + type);
-            }
             if (relation.getTags().get(entity_type) != null
                     && (relation.getTags().get(entity_type).equals(type) || type.equals(" "))) {
                 Geometry relation_geom = relation.getGeometry();
-                if(relation.getId() == 67291)
-                {
-                    logger.info("relation: " + relation.getTags().get(entity_type));
-                    logger.info("type: " + type);
-                }
-                if(relation_geom.isEmpty())
-                {
-                    logger.info("relation not valid");
-                }
-                if(!relation_geom.isValid())
-                {
-                    logger.info("relation not valid");
-                }
                 try {
                     relation_geom = JTS.transform(relation_geom, transform);
                     if(relation_geom instanceof GeometryCollection)
@@ -238,11 +210,6 @@ public class MapServiceImpl extends MapServiceImplBase {
                         }
                     }
                     else{
-                        boolean contains = bbox_geom.contains(relation_geom);
-                        boolean intersects = bbox_geom.intersects(relation_geom);
-                        Coordinate[] distance = relation_geom.getCoordinates();
-                        Coordinate[] distance2 = bbox_geom.getCoordinates();
-                        double dist = relation_geom.distance(bbox_geom);
                         if ((point_dist == 0.0 && bbox_geom.contains(relation_geom)) || (point_dist == 0.0 && bbox_geom.intersects(relation_geom))
                         ||  (point_dist != 0.0 && relation_geom.distance(point_geom_transformed) <= point_dist)) {
                             response_list.add(getEntityResponsebyRelation(relation, entity_type));
@@ -284,10 +251,6 @@ public class MapServiceImpl extends MapServiceImplBase {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
                 }
-                /*if (geomTransformed.intersects(bboxTransformed)) {
-                    Geometry intersection = geomTransformed.intersection(bboxTransformed);
-                    landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
-                }*/
             }
         }
 
@@ -299,10 +262,6 @@ public class MapServiceImpl extends MapServiceImplBase {
                     Geometry intersection = geomTransformed.intersection(bboxTransformed);
                     landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
                 }
-                /*if (geomTransformed.intersects(bboxTransformed)) {
-                    Geometry intersection = geomTransformed.intersection(bboxTransformed);
-                    landuseAreas.merge(landuse, intersection.getArea(), (a, b) -> (double) a + (double) b);
-                }*/
             }
         }
     } catch (Exception e) {
@@ -461,7 +420,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         byte[] tile_content = null;*/
         try{
             OSMTileRenderer tile_renderer = new OSMTileRenderer(osmData);
-            byte[] image = tile_renderer.renderFakeTile(x, y, z, filter);
+            byte[] image = tile_renderer.renderTile(x, y, z, filter);
             return image;
         }
         catch(Exception e)
