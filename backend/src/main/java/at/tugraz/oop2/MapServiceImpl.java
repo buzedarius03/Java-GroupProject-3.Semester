@@ -7,6 +7,8 @@ import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
 import at.tugraz.oop2.Mapservice.EntitybyIdResponse;
 import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.RouteRequest;
+import at.tugraz.oop2.Mapservice.TileRequest;
+import at.tugraz.oop2.Mapservice.TileResponse;
 import at.tugraz.oop2.Mapservice.UsageRequest;
 import at.tugraz.oop2.Mapservice.UsageResponse;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
@@ -42,6 +44,8 @@ import org.opengis.referencing.operation.MathTransform;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.google.protobuf.ByteString;
 
 public class MapServiceImpl extends MapServiceImplBase {
 
@@ -400,6 +404,7 @@ public class MapServiceImpl extends MapServiceImplBase {
 
     @Override
     public void getUsage(UsageRequest request, StreamObserver<UsageResponse> responseObserver) {
+        try{
         String usage = request.getUsage();
         double[] tl = { request.getBbox().getTlX(), request.getBbox().getTlY() };
         double[] br = { request.getBbox().getBrX(), request.getBbox().getBrY() };
@@ -410,9 +415,39 @@ public class MapServiceImpl extends MapServiceImplBase {
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+        }
+        catch(ResponseStatusException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find road");
+        }
     }
 
-    
+    @Override
+    public void getTile(TileRequest request, StreamObserver<TileResponse> responseObserver) {
+        try {
+            long z = request.getZ();
+            long x = request.getX();
+            long y = request.getY();
+            String filter = request.getFilter();
+
+            byte[] tileData = getTileData(z, x, y, filter);
+
+            TileResponse response = TileResponse.newBuilder().build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (ResponseStatusException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find route");
+        }
+    }
+
+    private byte[] getTileData(long z, long x, long y, String filter) {
+        
+        byte[] tile_content = null;
+        return tile_content;
+    }
+
     @Override
     public void getRoute(RouteRequest request, StreamObserver<EntityResponse> responseObserver) {
         try {

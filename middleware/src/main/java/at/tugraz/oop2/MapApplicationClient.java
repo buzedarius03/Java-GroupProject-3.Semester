@@ -123,10 +123,9 @@ public class MapApplicationClient {
 
 
     public byte[] getTile(int z, int x, int y, String layers) {
-        TileRequest request = TileRequest.newBuilder().setZ(z).setX(x).setY(y).build();
-        TileResponse graph = stub.getTile(request);
-        ByteString tile_data = graph.getTileInfo();
-        return tile_data.toByteArray();
+        TileRequest request = TileRequest.newBuilder().setZ(z).setX(x).setY(y).setFilter(layers).build();
+        byte[] graph = stub.getTile(request).toByteArray();
+        return graph;
     }
 
     public Road[] getRoute(long from_node_id, long to_node_id, String weighting) {
