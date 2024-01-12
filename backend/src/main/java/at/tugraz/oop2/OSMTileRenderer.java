@@ -7,6 +7,7 @@ import org.locationtech.jts.geom.Polygon;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,7 +46,24 @@ public class OSMTileRenderer {
         OSMTileRenderer.osmData = osmData;
     }
 
-    public void renderTile(int x, int y, int z, String filter, String filepath) {
+    public byte[] renderFakeTile(int x, int y, int z, String filter) {
+        BufferedImage image = new BufferedImage(TILE_SIZE, TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(Color.RED);
+        try {
+            ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", byte_stream);
+            byte[] tile_image = byte_stream.toByteArray();
+            return tile_image;
+            //ImageIO.write(image, "png", new File(filepath));
+        } catch (IOException e) {
+            e.printStackTrace();
+            byte[] empty_image = null;
+            return empty_image;
+        }
+    }
+
+    public byte[] renderTile(int x, int y, int z, String filter) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -84,9 +102,16 @@ public class OSMTileRenderer {
 
         g.dispose();
         try {
-            ImageIO.write(image, "png", new File(filepath));
+            ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", byte_stream);
+
+            byte[] tile_image = byte_stream.toByteArray();
+            return tile_image;
+            //ImageIO.write(image, "png", new File(filepath));
         } catch (IOException e) {
             e.printStackTrace();
+            byte[] empty_image = null;
+            return empty_image;
         }
     }
 

@@ -215,9 +215,9 @@ public class EventController {
     }
 
     // Tile rendering is still WIP
-    @GetMapping("/tiles/{z}/{x}/{y}")
+    @GetMapping("/tile/{z}/{x}/{y}")
     public byte[] getTile(@PathVariable("z") int z, @PathVariable("x") int x, @PathVariable("y") int y,
-            @RequestParam(value = "layers", defaultValue = " ") String filter) {
+            @RequestParam(value = "filter", defaultValue = " ") String filter) {
         byte[] tile = client.getTile(z, x, y, filter);
         return tile;
     }

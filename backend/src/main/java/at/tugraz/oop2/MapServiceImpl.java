@@ -430,7 +430,7 @@ public class MapServiceImpl extends MapServiceImplBase {
 
     @Override
     public void getTile(TileRequest request, StreamObserver<TileResponse> responseObserver) {
-        //try {
+        try {
             int z = request.getZ();
             int x = request.getX();
             int y = request.getY();
@@ -443,9 +443,10 @@ public class MapServiceImpl extends MapServiceImplBase {
             responseObserver.onNext(response);
             responseObserver.onCompleted();
 
-        /* } catch (ResponseStatusException e) {
+         }
+         catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find route");
-        }*/
+        }
     }
 
     private byte[] getTileData(int z, int x, int y, String filter) {
@@ -459,12 +460,10 @@ public class MapServiceImpl extends MapServiceImplBase {
         Bbox bbox = Bbox.newBuilder().setTlX(x).setTlY(y).setBrX(x_br).setBrY(y_br).build();
         EntityResponse mapping_amenities = getEntityResponse(new Coordinate(x, y), new Coordinate(x_br, y_br), new double[] {0, 0}, 0, "amenity",""); 
         byte[] tile_content = null;*/
-        OSMTileRenderer my_file = new OSMTileRenderer(osmData);
-        my_file.renderTile(x, y, z, filter, "/data/tile_content.png");
-        Path file_path = Paths.get("/data/tile_content.png");
         try{
-        byte[] tile_content = Files.readAllBytes(file_path);
-        return tile_content;
+            OSMTileRenderer tile_renderer = new OSMTileRenderer(osmData);
+            byte[] image = tile_renderer.renderFakeTile(x, y, z, filter);
+            return image;
         }
         catch(Exception e)
         {
