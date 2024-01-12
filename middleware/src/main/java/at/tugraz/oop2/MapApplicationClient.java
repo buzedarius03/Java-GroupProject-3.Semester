@@ -1,5 +1,6 @@
 package at.tugraz.oop2;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -117,7 +118,6 @@ public class MapApplicationClient {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "usage not found");
         }
         String usage_info = stub.getUsage(request).getUsageInfo();
-        
         return usage_info;
     }
 
@@ -125,7 +125,8 @@ public class MapApplicationClient {
     public byte[] getTile(int z, int x, int y, String layers) {
         TileRequest request = TileRequest.newBuilder().setZ(z).setX(x).setY(y).setFilter(layers).build();
         byte[] graph = stub.getTile(request).toByteArray();
-        return graph;
+        byte[] newArray = Arrays.copyOfRange(graph, 3, graph.length);
+        return newArray;
     }
 
     public Road[] getRoute(long from_node_id, long to_node_id, String weighting) {
