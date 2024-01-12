@@ -12,7 +12,9 @@ import at.tugraz.oop2.Mapservice.TileResponse;
 import at.tugraz.oop2.Mapservice.UsageRequest;
 import at.tugraz.oop2.Mapservice.UsageResponse;
 import at.tugraz.oop2.Mapservice.AmenityRequest;
+import at.tugraz.oop2.Mapservice.Bbox;
 import at.tugraz.oop2.Mapservice.EntityResponse;
+
 
 import org.geotools.graph.structure.DirectedGraph;
 import org.geotools.graph.structure.Graph;
@@ -29,6 +31,9 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import java.util.logging.Logger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,6 +56,7 @@ public class MapServiceImpl extends MapServiceImplBase {
 
     private static final Logger logger = Logger.getLogger(MapServiceServer.class.getName());
     private final OSMData osmData;
+    private static final int TILE_SIZE = 512;
 
     public MapServiceImpl(OSMData osmData) {
         this.osmData = osmData;
@@ -425,14 +431,14 @@ public class MapServiceImpl extends MapServiceImplBase {
     @Override
     public void getTile(TileRequest request, StreamObserver<TileResponse> responseObserver) {
         try {
-            double z = request.getZ();
-            double x = request.getX();
-            double y = request.getY();
+            int z = request.getZ();
+            int x = request.getX();
+            int y = request.getY();
             String filter = request.getFilter();
 
             byte[] tileData = getTileData(z, x, y, filter);
-
-            TileResponse response = TileResponse.newBuilder().build();
+            ByteString tile_data_ByteString = ByteString.copyFrom(tileData);
+            TileResponse response = TileResponse.newBuilder().setTileInfo(tile_data_ByteString).build();
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -442,10 +448,28 @@ public class MapServiceImpl extends MapServiceImplBase {
         }
     }
 
-    private byte[] getTileData(double z, double x, double y, String filter) {
+    private byte[] getTileData(int z, int x, int y, String filter) {
         
-        byte[] tile_content = null;
+        /*double scale = TILE_SIZE * (1 << z);
+        double x_br = (x + 180) / 360 * scale;
+
+        double latRad = Math.toRadians(y);
+        double y_br = (0.5 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / (4 * Math.PI)) * scale;
+
+        Bbox bbox = Bbox.newBuilder().setTlX(x).setTlY(y).setBrX(x_br).setBrY(y_br).build();
+        EntityResponse mapping_amenities = getEntityResponse(new Coordinate(x, y), new Coordinate(x_br, y_br), new double[] {0, 0}, 0, "amenity",""); 
+        byte[] tile_content = null;*/
+        OSMTileRenderer my_file = new OSMTileRenderer(osmData);
+        my_file.renderTile(x, y, z, filter, "/data/tile_content.png");
+        Path file_path = Paths.get("/data/tile_content.png" );
+        try{
+        byte[] tile_content = Files.readAllBytes(file_path);
         return tile_content;
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "internal error");
+        }
     }
 
     @Override
