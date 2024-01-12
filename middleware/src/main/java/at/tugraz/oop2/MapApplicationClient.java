@@ -7,9 +7,13 @@ import java.util.logging.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.google.protobuf.ByteString;
+
 import at.tugraz.oop2.Mapservice.AmenityRequest;
 import at.tugraz.oop2.Mapservice.RoadRequest;
 import at.tugraz.oop2.Mapservice.RouteRequest;
+import at.tugraz.oop2.Mapservice.TileRequest;
+import at.tugraz.oop2.Mapservice.TileResponse;
 import at.tugraz.oop2.Mapservice.UsageRequest;
 import at.tugraz.oop2.Mapservice.Bbox;
 import at.tugraz.oop2.Mapservice.EntitybyIdRequest;
@@ -119,7 +123,10 @@ public class MapApplicationClient {
 
 
     public byte[] getTile(int z, int x, int y, String layers) {
-        return null;
+        TileRequest request = TileRequest.newBuilder().setZ(z).setX(x).setY(y).build();
+        TileResponse graph = stub.getTile(request);
+        ByteString tile_data = graph.getTileInfo();
+        return tile_data.toByteArray();
     }
 
     public Road[] getRoute(long from_node_id, long to_node_id, String weighting) {

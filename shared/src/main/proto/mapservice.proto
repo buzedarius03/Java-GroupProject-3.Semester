@@ -71,6 +71,18 @@ message RouteRequest{
     string weighting = 4;
 }
 
+message TileRequest{
+    int64 id = 1;
+    int64 z = 2;
+    int64 x = 3;
+    int64 y = 4;
+    string filter = 5;
+}
+
+message TileResponse{
+
+    bytes tileInfo = 1;
+}
 
 service MapService {
     rpc GetEntitybyId(EntitybyIdRequest) returns (EntitybyIdResponse);
@@ -78,4 +90,5 @@ service MapService {
     rpc GetRoad(RoadRequest) returns (EntityResponse);
     rpc GetUsage(UsageRequest) returns (UsageResponse);
     rpc GetRoute(RouteRequest) returns (EntityResponse);
+    rpc GetTile(TileRequest) returns (TileResponse);
 }
