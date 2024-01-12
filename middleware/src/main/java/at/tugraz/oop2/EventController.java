@@ -1,3 +1,14 @@
+//---------------------------------------------------------------------------------------------------------------------
+// EventController.java
+//
+//
+// This file contains the implementation of the EventController class, which handles requests related to amenities,
+// roads, tiles, usage information, and routing in a mapping application.
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
+//
 package at.tugraz.oop2;
 
 import org.springframework.beans.factory.annotation.Value;

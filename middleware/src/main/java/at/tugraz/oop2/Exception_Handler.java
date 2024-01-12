@@ -1,3 +1,16 @@
+//---------------------------------------------------------------------------------------------------------------------
+// EventController.java
+//
+//
+// This file contains the implementation of the Exception_Handler class, which is a global controller advice for handling
+// specific custom exceptions in a Spring application related to resource not found errors, invalid parameters, and internal
+// server errors.
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
+//
+
 package at.tugraz.oop2;
 
 import org.springframework.core.annotation.Order;
