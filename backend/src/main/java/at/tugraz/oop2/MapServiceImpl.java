@@ -430,7 +430,7 @@ public class MapServiceImpl extends MapServiceImplBase {
 
     @Override
     public void getTile(TileRequest request, StreamObserver<TileResponse> responseObserver) {
-        try {
+        //try {
             int z = request.getZ();
             int x = request.getX();
             int y = request.getY();
@@ -443,9 +443,9 @@ public class MapServiceImpl extends MapServiceImplBase {
             responseObserver.onNext(response);
             responseObserver.onCompleted();
 
-        } catch (ResponseStatusException e) {
+        /* } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "couldn't find route");
-        }
+        }*/
     }
 
     private byte[] getTileData(int z, int x, int y, String filter) {
@@ -461,7 +461,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         byte[] tile_content = null;*/
         OSMTileRenderer my_file = new OSMTileRenderer(osmData);
         my_file.renderTile(x, y, z, filter, "/data/tile_content.png");
-        Path file_path = Paths.get("/data/tile_content.png" );
+        Path file_path = Paths.get("/data/tile_content.png");
         try{
         byte[] tile_content = Files.readAllBytes(file_path);
         return tile_content;
@@ -492,10 +492,6 @@ public class MapServiceImpl extends MapServiceImplBase {
             }
 
             /*DijkstraIterator seek_algorithm = new DijkstraIterator(graph, fromNode, request.getWeighting());
-
-  
-    
-
             List<EntitybyIdResponse> responseList = new ArrayList<>();
             for (long node_id : routeNodeIds) {
                 OSMNode node = osmData.getNodesMap().get(node_id);
@@ -503,9 +499,6 @@ public class MapServiceImpl extends MapServiceImplBase {
                     responseList.add(getEntityResponsebyNode(node, "highway"));
                 }
             }
-
-
-    
             EntityResponse response = EntityResponse.newBuilder().addAllEntity(responseList).build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();*/
