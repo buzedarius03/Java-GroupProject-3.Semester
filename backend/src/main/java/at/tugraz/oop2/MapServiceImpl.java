@@ -420,7 +420,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         byte[] tile_content = null;*/
         try{
             OSMTileRenderer tile_renderer = new OSMTileRenderer(osmData);
-            byte[] image = tile_renderer.renderTile(x, y, z, filter);
+            byte[] image = tile_renderer.renderFakeTile(x, y, z, filter);
             return image;
         }
         catch(Exception e)
