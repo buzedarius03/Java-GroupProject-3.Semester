@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------------------------------------------------
 // Amenity.java
 //
-// This file defines the Amenity class, representing the amenitys, it has name, id geom, tags, type.. as parameters.
-//
+// This file defines a class representing an amenity in the application. It includes attributes such as name, ID, geometry,
+// tags, and type. The geometry is stored as a JSONObject.
 // Group: 164
 // Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
 //---------------------------------------------------------------------------------------------------------------------

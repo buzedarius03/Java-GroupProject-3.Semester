@@ -1,3 +1,13 @@
+//---------------------------------------------------------------------------------------------------------------------
+// MapApplication.java
+//
+// This file contains the main class, MapApplication, for a Spring Boot application. It configures the application, sets
+// up environment variables, and starts the middleware with specified properties, including the middleware port and the
+// backend target.
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
 package at.tugraz.oop2;
 
 import org.springframework.boot.SpringApplication;

@@ -1,3 +1,11 @@
+//---------------------------------------------------------------------------------------------------------------------
+// MapServiceImpl.java
+//
+// This file defines the MapServiceImpl class, which implements the gRPC service for map-related functionality.
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
 package at.tugraz.oop2;
 
 import io.grpc.stub.StreamObserver;

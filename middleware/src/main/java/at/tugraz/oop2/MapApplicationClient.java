@@ -1,3 +1,13 @@
+//---------------------------------------------------------------------------------------------------------------------
+// MapApplicationClient.java
+//
+// This file contains the MapApplicationClient class, which serves as a client for interacting with a gRPC-based 
+// MapService. It includes methods for fetching information about amenities, roads, usage details, tiles, and routes 
+// from the backend server.
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
 package at.tugraz.oop2;
 
 import java.util.Arrays;
