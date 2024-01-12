@@ -1,3 +1,12 @@
+//---------------------------------------------------------------------------------------------------------------------
+// Amenity.java
+//
+// This file defines the Amenity class, representing the amenitys, it has name, id geom, tags, type.. as parameters.
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
+//
 package at.tugraz.oop2;
 
 import lombok.Getter;
