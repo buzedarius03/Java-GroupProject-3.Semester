@@ -425,9 +425,9 @@ public class MapServiceImpl extends MapServiceImplBase {
     @Override
     public void getTile(TileRequest request, StreamObserver<TileResponse> responseObserver) {
         try {
-            long z = request.getZ();
-            long x = request.getX();
-            long y = request.getY();
+            double z = request.getZ();
+            double x = request.getX();
+            double y = request.getY();
             String filter = request.getFilter();
 
             byte[] tileData = getTileData(z, x, y, filter);
@@ -442,7 +442,7 @@ public class MapServiceImpl extends MapServiceImplBase {
         }
     }
 
-    private byte[] getTileData(long z, long x, long y, String filter) {
+    private byte[] getTileData(double z, double x, double y, String filter) {
         
         byte[] tile_content = null;
         return tile_content;

@@ -122,7 +122,7 @@ public class MapApplicationClient {
     }
 
 
-    public byte[] getTile(int z, int x, int y, String layers) {
+    public byte[] getTile(double z, double x, double y, String layers) {
         TileRequest request = TileRequest.newBuilder().setZ(z).setX(x).setY(y).setFilter(layers).build();
         byte[] graph = stub.getTile(request).toByteArray();
         return graph;
