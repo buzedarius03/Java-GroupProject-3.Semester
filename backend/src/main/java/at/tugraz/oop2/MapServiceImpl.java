@@ -439,7 +439,6 @@ public class MapServiceImpl extends MapServiceImplBase {
             byte[] tileData = getTileData(z, x, y, filter);
             ByteString tile_data_ByteString = ByteString.copyFrom(tileData);
             TileResponse response = TileResponse.newBuilder().setTileInfo(tile_data_ByteString).build();
-
             responseObserver.onNext(response);
             responseObserver.onCompleted();
 

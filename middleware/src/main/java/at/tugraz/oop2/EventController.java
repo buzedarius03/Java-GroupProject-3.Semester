@@ -2,6 +2,7 @@ package at.tugraz.oop2;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.RouteMatcher.Route;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -215,7 +216,7 @@ public class EventController {
     }
 
     // Tile rendering is still WIP
-    @GetMapping("/tile/{z}/{x}/{y}")
+    @GetMapping(value = "/tile/{z}/{x}/{y}", produces = MediaType.IMAGE_PNG_VALUE)
     public byte[] getTile(@PathVariable("z") int z, @PathVariable("x") int x, @PathVariable("y") int y,
             @RequestParam(value = "filter", defaultValue = " ") String filter) {
         byte[] tile = client.getTile(z, x, y, filter);
