@@ -3,7 +3,7 @@ package at.tugraz.oop2;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import org.xml.sax.*;
-
+import org.locationtech.jts.awt.PolygonShape;
 import org.locationtech.jts.geom.*;
 
 import java.io.IOException;
@@ -66,7 +66,6 @@ public class OSMParser {
     private void parseWays(Document document, Map<Long, OSMNode> nodesMap, Map<Long, OSMWay> waysMap) {
         NodeList wayList = document.getElementsByTagName("way");
         int numWays = wayList.getLength();
-        int u = 0;
         logger.info("Parsing " + numWays + " ways.");
 
         for (int i = 0; i < numWays; i++) {
@@ -114,10 +113,6 @@ public class OSMParser {
                         // Open way or too few points to make a Polygon -> It's a LineString
                         wayGeometry = geometryFactory.createLineString(coordsArray);
                     }
-                    if(!wayGeometry.isValid())
-                    {
-                        u+=1;
-                    }
                     OSMWay way = new OSMWay(wayId, wayGeometry, parseTags(wayElement), child_ids);
                     waysMap.put(wayId, way);
                 } else {
@@ -133,8 +128,6 @@ public class OSMParser {
 
     private void parseRelations(Document document, Map<Long, OSMNode> nodesMap, Map<Long, OSMWay> waysMap,
             Map<Long, OSMRelation> relationsMap) {
-        int u = 0;
-        int x = 0;
         NodeList relationList = document.getElementsByTagName("relation");
         int numRelations = relationList.getLength();
         logger.info("Parsing " + numRelations + " relations.");
@@ -146,10 +139,6 @@ public class OSMParser {
             }
             Element relationElement = (Element) relationNode;
             long relationId = Long.parseLong(relationElement.getAttribute("id"));
-            if(relationId == 476)
-            {
-                logger.info("Relation 476");
-            }
             Map<String, String> tags = parseTags(relationElement);
 
             // Handle multipolygon and building (we assume building outlines can also be treated as multipolygons)
