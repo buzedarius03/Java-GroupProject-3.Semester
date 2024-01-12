@@ -1,3 +1,11 @@
+//---------------------------------------------------------------------------------------------------------------------
+// MapServiceServer.java
+//
+// This file defines the MapServiceServer class, which is responsible for starting the gRPC server for the map service.
+//
+// Group: 164
+// Authors: Buze Darius, Hirschbäck Martin, Sert Dominik
+//---------------------------------------------------------------------------------------------------------------------
 package at.tugraz.oop2;
 
 import java.util.logging.Logger;
