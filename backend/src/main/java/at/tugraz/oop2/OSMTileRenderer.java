@@ -77,19 +77,7 @@ public class OSMTileRenderer {
                     break;
                 default:
                     // Draw specific road type
-                    for (OSMWay way : osmData.getWaysMap().values()) {
-                        if (layer.equals(way.getTags().get("highway"))) {
-                            drawWay(g, way);
-                        }
-                    }
-                    // Check if the layer is not a road but another type of land usage
-                    if (landUsageColors.containsKey(layer)) {
-                        for (OSMWay way : osmData.getWaysMap().values()) {
-                            if (layer.equals(way.getTags().get("landuse"))) {
-                                drawLandUsage(g, way, layer);
-                            }
-                        }
-                    }
+                   drawSpecificLayer(g, layer);
                     break;
             }
         }
@@ -101,6 +89,36 @@ public class OSMTileRenderer {
             e.printStackTrace();
         }
     }
+
+    private void drawSpecificLayer(Graphics2D g, String layer) {
+        // Check if the layer corresponds to a road type
+        Style style = roadStyles.get(layer);
+        if (style != null) {
+            g.setColor(style.getColor());
+            g.setStroke(style.getStroke());
+
+            // Draw all roads of the specified type
+            for (OSMWay way : osmData.getWaysMap().values()) {
+                if (layer.equals(way.getTags().get("highway"))) {
+                    drawWay(g, way);
+                }
+            }
+        } else {
+            // Check if the layer corresponds to a land usage type
+            Color color = landUsageColors.get(layer);
+            if (color != null) {
+                g.setColor(color);
+
+                // Draw all land usages of the specified type
+                for (OSMWay way : osmData.getWaysMap().values()) {
+                    if (layer.equals(way.getTags().get("landuse"))) {
+                        drawLandUsage(g, way, layer);
+                    }
+                }
+            }
+        }
+    }
+
 
     private void drawWay(Graphics2D g, OSMWay way) {
         // Skip if the way does not have a highway tag
